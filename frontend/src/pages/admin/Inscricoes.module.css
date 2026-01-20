@@ -1,0 +1,208 @@
+.container {
+    min-height: 100vh;
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.headerActions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.filters {
+    margin-bottom: var(--spacing-xl);
+}
+
+.filterTitle {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.filterGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.filterGrid label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.select,
+.input {
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(30, 30, 30, 0.95);
+    /* Fundo escuro sólido */
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    /* Texto branco/claro */
+    font-size: var(--font-size-base);
+    transition: all 0.2s ease;
+}
+
+.select:focus,
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    background: rgba(30, 30, 30, 1);
+}
+
+.select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a3a3a3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+.select option {
+    background: #1a1a1a;
+    color: var(--color-text-primary);
+}
+
+.searchBox {
+    position: relative;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.inscricaoCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.inscricaoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.inscricaoHeader h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.inscricaoHeader p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.badges {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge.PARTICIPANTE {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.badge.TRABALHADOR {
+    background: rgba(139, 92, 246, 0.2);
+    color: #8b5cf6;
+}
+
+.badge.PENDENTE {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.badge.APROVADA {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.badge.REJEITADA {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.badge.VERMELHO {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.badge.VERDE {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.badge.AMARELO {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.inscricaoActions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .headerActions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filterGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .inscricaoHeader {
+        flex-direction: column;
+    }
+
+    .inscricaoActions {
+        flex-direction: column;
+    }
+}

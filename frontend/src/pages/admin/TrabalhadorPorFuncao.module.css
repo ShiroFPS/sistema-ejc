@@ -1,0 +1,162 @@
+.container {
+    min-height: 100vh;
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.funcoes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.funcaoCard {
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.funcaoCard:hover {
+    border-color: var(--color-primary-500);
+}
+
+.funcaoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+}
+
+.funcaoNome {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.funcaoCount {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.toggleIcon {
+    font-size: 1.5rem;
+    color: var(--color-text-tertiary);
+    transition: transform var(--transition-base);
+}
+
+.trabalhadores {
+    border-top: 1px solid var(--glass-border);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.vazio {
+    text-align: center;
+    color: var(--color-text-tertiary);
+    padding: var(--spacing-lg);
+}
+
+.trabalhador {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-base);
+}
+
+.trabalhador:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.trabalhadorInfo {
+    flex: 1;
+}
+
+.trabalhadorNome {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.trabalhadorContato {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.trabalhadorCodigo {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
+
+.trabalhadorCodigo code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+    font-family: 'Courier New', monospace;
+}
+
+.trabalhadorCor {
+    margin-left: var(--spacing-md);
+}
+
+.corBadge {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-full);
+    color: #ffffff;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .trabalhador {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .trabalhadorCor {
+        margin-left: 0;
+    }
+}

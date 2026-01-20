@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  role      String   @default("COORDENADOR") // ADMIN ou COORDENADOR
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Modelo para Participantes (campos completos)
+model InscricaoParticipante {
+  id String @id @default(uuid())
+
+  status            String   @default("PENDENTE") // PENDENTE, APROVADA, REJEITADA
+  
+  // Crachá
+  codigoVerificacao String   @unique @default(cuid()) // Código único de 6 dígitos (gerado no backend)
+  corCracha         String?  // VERDE, AMARELO, VERMELHO (atribuído pelo admin)
+  
+  // LGPD
+  lgpdCiente        Boolean  @default(false)
+  
+  // Dados pessoais
+  nomeCompleto      String
+  apelido           String
+  dataNascimento    String   // Armazenado como texto no SQLite
+  sexo              String   // MASCULINO ou FEMININO
+  telefone          String
+  instagram         String?
+  
+  // Estado civil e escolaridade
+  estadoCivil       String   // SOLTEIRO, CASADO, UNIAO_ESTAVEL, DIVORCIADO, VIUVO
+  escolaridade      String
+  instituicaoEnsino String?
+  cursoAtual        String?
+  profissao         String
+  trabalha          Boolean  @default(false)
+  localTrabalho     String?
+  
+  // Informações religiosas
+  batizado          Boolean  @default(false)
+  localBatismo      String?
+  fezPrimeiraComunhao Boolean @default(false)
+  fezCrisma         Boolean  @default(false)
+  
+  // Endereço
+  enderecoCompleto  String
+  bairro            String
+  moraComQuem       String
+  
+  // Dados dos pais
+  estadoCivilPais   String
+  nomeMae           String
+  telefoneMae       String
+  enderecoMae       String
+  nomePai           String
+  telefonePai       String
+  enderecoPai       String
+  
+  // Amigos/parentes inscritos
+  amigosParentesInscritos String?
+  
+  // Contatos de emergência (5 pessoas)
+  contatosEmergencia String   // JSON array com nome e telefone
+  
+  // Saúde
+  restricoesAlimentares String?
+  alergias              String?
+  problemasSaude        String?
+  medicamentosContinuos String?
+  
+  // Arquivos
+  fotoUrl               String?
+  comprovanteUrl        String?
+  
+  // Metadados
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("inscricoes_participantes")
+}
+
+// Modelo para Trabalhadores/Encontreiros (campos específicos)
+model InscricaoTrabalhador {
+  id String @id @default(uuid())
+
+  status                String   @default("PENDENTE") // PENDENTE, APROVADA, REJEITADA
+  grupoFuncional        String?  // VERMELHO, VERDE, LARANJA, AZUL, AMARELO (círculos)
+  
+  // Crachá
+  codigoVerificacao     String   @unique @default(cuid()) // Código único de 6 dígitos (gerado no backend)
+  corCracha             String?  // VERDE, AMARELO, VERMELHO (atribuído pelo admin)
+  funcaoTrabalhador     String?  // Função específica atribuída pelo admin
+  apelido               String?  // Nome para o Crachá (frente)
+  
+  // Tipo de inscrição
+  tipoInscricao         String   // CASAIS_UNIAO_ESTAVEL ou SOLTEIRO
+  
+  // E-mail
+  email                 String
+  
+  // Pessoa 1
+  nomeCompleto1         String
+  contato1              String
+  instagram1            String
+  
+  // Pessoa 2 (opcional se solteiro)
+  nomeCompleto2         String?
+  contato2              String?
+  instagram2            String?
+  
+  // Endereço
+  enderecoCompleto      String
+  
+  // Trabalho/Estudo
+  trabalhamOuEstudam    Boolean  @default(false)
+  areaTrabalhoEstudo    String?
+  
+  // Experiência EJC
+  paroquiaEjcAno        String   // Ex: "Paróquia Auxiliadora - 2019"
+  equipesJaServiram     String   // Ex: "Vermelho, Verde"
+  
+  // Habilidades
+  tocaInstrumento       Boolean  @default(false)
+  qualInstrumento       String?
+  sabeCantar            Boolean  @default(false)
+  operaEquipamentosSom  Boolean  @default(false)
+  habilidadesComputador Boolean  @default(false)
+  trabalhosManuais      Boolean  @default(false)
+  
+  // Metadados
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@map("inscricoes_trabalhadores")
+}
+
+model Configuracao {
+  id Int @id @default(1)
+  
+  // Limites de vagas
+  limiteParticipantes   Int      @default(100)
+  limiteTrabalhadores   Int      @default(100)
+  
+  // Data limite
+  dataLimiteInscricoes  String?  // Armazenado como texto no SQLite
+  
+  // Cores personalizadas (JSON com paleta)
+  coresPersonalizadas   String?  @default("{}")
+  
+  // Emails para notificações
+  emailsNotificacao     String?  // JSON array
+  
+  // Controle
+  updatedAt             DateTime @updatedAt
+  
+  @@map("configuracoes")
+}
+
+model Notificacao {
+  id            String   @id @default(uuid())
+  tipo          String   // EMAIL ou WHATSAPP
+  destinatario  String
+  mensagem      String
+  status        String   // ENVIADA, FALHOU, PENDENTE
+  erro          String?
+  createdAt     DateTime @default(now())
+  
+  @@map("notificacoes")
+}

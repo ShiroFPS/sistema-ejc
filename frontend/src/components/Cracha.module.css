@@ -1,0 +1,189 @@
+.cracha {
+    width: 420px;
+    /* Meia A4 paisagem: 148mm ≈ 420px */
+    height: 297px;
+    /* Metade de 210mm ≈ 297px */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin: var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    transition: transform var(--transition-base);
+    border: 1px solid #e5e7eb;
+}
+
+.cracha:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Faixa colorida lateral (20px de largura) */
+.faixaCor {
+    width: 20px;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+/* FRENTE DO CRACHÁ */
+.conteudoFrente {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.logoImg {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%;
+    /* Opcional: se o logo for redondo */
+}
+
+.infoFrente {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.nomeFrente {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.funcaoBox {
+    margin-top: var(--spacing-sm);
+    padding: 0.25rem 1rem;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.funcao {
+    font-size: 1rem;
+    color: #ffffff;
+    /* Texto branco no box colorido */
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.rodapeFrente {
+    border-top: 2px solid #e5e7eb;
+    padding-top: var(--spacing-md);
+    text-align: center;
+}
+
+.codigoFrente {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #6366f1;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* VERSO DO CRACHÁ */
+.conteudoVerso {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    background: #ffffff;
+    color: #000000;
+}
+
+.topoVerso {
+    text-align: center;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: var(--spacing-lg);
+}
+
+.tituloVerso {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.subtituloVerso {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.dadosVerso {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    justify-content: center;
+}
+
+.campoVerso {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.labelVerso {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.valorVerso {
+    font-size: 1.125rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.codigoVerso {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 4px;
+    background: #f3f4f6;
+    padding: var(--spacing-md);
+    border-radius: 8px;
+    text-align: center;
+    border: 2px dashed #d1d5db;
+}
+
+.rodapeVerso {
+    border-top: 2px solid #e5e7eb;
+    padding-top: var(--spacing-md);
+    text-align: center;
+}
+
+.avisoVerso {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Responsive */
+@media print {
+    .cracha {
+        page-break-inside: avoid;
+    }
+}
