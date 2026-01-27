@@ -123,7 +123,7 @@ const EditarParticipante = () => {
                 </Button>
             </div>
 
-            <h1 className={styles.title}>Editar Participante</h1>
+            <h1 className={styles.title}>Editar Encontrista</h1>
 
             <div className={styles.content} style={{ gridTemplateColumns: '1fr' }}>
                 <div className={styles.leftCol}>

@@ -106,8 +106,8 @@ const Inscricoes = () => {
                                 className={styles.select}
                             >
                                 <option value="">Todos</option>
-                                <option value="PARTICIPANTE">Participante</option>
-                                <option value="TRABALHADOR">Trabalhador</option>
+                                <option value="PARTICIPANTE">Encontrista</option>
+                                <option value="TRABALHADOR">Encontreiro</option>
                             </select>
                         </div>
 
@@ -163,19 +163,21 @@ const Inscricoes = () => {
                             </div>
                         )}
 
-                        <div className={styles.filterGroup}>
-                            <label>Círculo / Grupo</label>
-                            <select
-                                value={filtros.grupoFuncional}
-                                onChange={(e) => setFiltros({ ...filtros, grupoFuncional: e.target.value })}
-                                className={styles.select}
-                            >
-                                <option value="">Todos os Grupos</option>
-                                <option value="VERMELHO">Vermelho</option>
-                                <option value="VERDE">Verde</option>
-                                <option value="AMARELO">Amarelo</option>
-                            </select>
-                        </div>
+                        {filtros.tipo === 'TRABALHADOR' && (
+                            <div className={styles.filterGroup}>
+                                <label>Círculo / Grupo</label>
+                                <select
+                                    value={filtros.grupoFuncional}
+                                    onChange={(e) => setFiltros({ ...filtros, grupoFuncional: e.target.value })}
+                                    className={styles.select}
+                                >
+                                    <option value="">Todos os Grupos</option>
+                                    <option value="VERMELHO">Vermelho</option>
+                                    <option value="VERDE">Verde</option>
+                                    <option value="AMARELO">Amarelo</option>
+                                </select>
+                            </div>
+                        )}
 
                         <div className={styles.filterGroup}>
                             <label>Pesquisar</label>
@@ -212,7 +214,7 @@ const Inscricoes = () => {
                                             <div className={styles.inscricaoInfo}>
                                                 <div className={styles.badges}>
                                                     <span className={`${styles.badge} ${styles[inscricao.tipo]}`}>
-                                                        {inscricao.tipo}
+                                                        {inscricao.tipo === 'TRABALHADOR' ? 'ENCONTREIRO' : 'ENCONTRISTA'}
                                                     </span>
                                                     <span className={`${styles.badge} ${styles[inscricao.status]}`}>
                                                         {inscricao.status}

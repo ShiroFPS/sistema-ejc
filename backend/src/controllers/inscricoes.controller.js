@@ -341,3 +341,36 @@ export const buscar = async (req, res, next) => {
         next(error);
     }
 };
+
+// Excluir inscrição
+export const excluir = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { tipo } = req.query;
+
+        if (!id) return res.status(400).json({ error: 'ID não informado' });
+
+        let deleted;
+        // Tenta excluir baseado no tipo, ou tenta ambos se não informado (embora o ideal seja informar)
+        if (tipo === 'TRABALHADOR') {
+            deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+        } else if (tipo === 'PARTICIPANTE') {
+            deleted = await prisma.inscricaoParticipante.delete({ where: { id } });
+        } else {
+            // Tenta encontrar e excluir
+            const p = await prisma.inscricaoParticipante.findUnique({ where: { id } });
+            if (p) {
+                deleted = await prisma.inscricaoParticipante.delete({ where: { id } });
+            } else {
+                deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+            }
+        }
+
+        res.json({ message: 'Inscrição removida com sucesso', id: deleted.id });
+    } catch (error) {
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: 'Inscrição não encontrada para exclusão' });
+        }
+        next(error);
+    }
+};

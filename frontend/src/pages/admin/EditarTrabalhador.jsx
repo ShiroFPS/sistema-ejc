@@ -209,7 +209,7 @@ const EditarTrabalhador = () => {
                 </div>
             </div>
 
-            <h1 className={styles.title}>Editar Trabalhador</h1>
+            <h1 className={styles.title}>Editar Encontreiro</h1>
 
             <div className={styles.content}>
                 <div className={styles.leftCol}>
@@ -333,8 +333,28 @@ const EditarTrabalhador = () => {
                                 <input name="paroquiaEjcAno" value={formData.paroquiaEjcAno} onChange={handleChange} className={styles.input} />
                             </div>
                             <div className={styles.formGroup}>
-                                <label>Equipes que já serviu</label>
-                                <input name="equipesJaServiram" value={formData.equipesJaServiram} onChange={handleChange} className={styles.input} />
+                                <label>Equipes que já serviu (Histórico)</label>
+                                <textarea
+                                    name="equipesJaServiram"
+                                    value={formData.equipesJaServiram}
+                                    readOnly
+                                    className={styles.input}
+                                    style={{
+                                        minHeight: '80px',
+                                        resize: 'none',
+                                        cursor: 'not-allowed',
+                                        opacity: 0.7
+                                    }}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Equipe deste ano (Função) *</label>
+                                <select name="funcaoTrabalhador" value={formData.funcaoTrabalhador} onChange={handleChange} className={styles.select}>
+                                    <option value="">Selecione uma função</option>
+                                    {FUNCOES.map((f) => (
+                                        <option key={f} value={f}>{f}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div className={styles.checkboxGrid}>
@@ -384,15 +404,7 @@ const EditarTrabalhador = () => {
                                 <option value="VERMELHO">🔴 Vermelho</option>
                             </select>
                         </div>
-                        <div className={styles.formGroup}>
-                            <label>Função *</label>
-                            <select name="funcaoTrabalhador" value={formData.funcaoTrabalhador} onChange={handleChange} className={styles.select}>
-                                <option value="">Selecione uma função</option>
-                                {FUNCOES.map((f) => (
-                                    <option key={f} value={f}>{f}</option>
-                                ))}
-                            </select>
-                        </div>
+
                         <Button onClick={handleSalvar} disabled={saving} fullWidth>
                             {saving ? 'Salvando...' : '💾 Salvar Todas Alterações'}
                         </Button>
@@ -418,8 +430,8 @@ const EditarTrabalhador = () => {
                         </div>
                     </Card>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

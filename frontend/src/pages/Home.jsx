@@ -33,7 +33,7 @@ const Home = () => {
                 <div className={styles.cardsGrid}>
                     <Card className={styles.optionCard}>
                         <div className={styles.cardIcon}>👤</div>
-                        <h2 className={styles.cardTitle}>Participante</h2>
+                        <h2 className={styles.cardTitle}>Encontrista</h2>
                         <p className={styles.cardDescription}>
                             Para jovens que desejam vivenciar o encontro pela primeira vez.
                         </p>
@@ -48,9 +48,9 @@ const Home = () => {
 
                     <Card className={styles.optionCard}>
                         <div className={styles.cardIcon}>🤝</div>
-                        <h2 className={styles.cardTitle}>Trabalhador</h2>
+                        <h2 className={styles.cardTitle}>Encontreiro</h2>
                         <p className={styles.cardDescription}>
-                            Para encontristas que desejam servir nas diversas equipes do encontro.
+                            Para quem já fez o EJC e deseja servir nas diversas equipes.
                         </p>
                         <Button
                             fullWidth

@@ -53,7 +53,7 @@ const Dashboard = () => {
                 <div className={styles.statsGrid}>
                     <Card className={styles.statCard}>
                         <div className={styles.statInfo}>
-                            <h3>Participantes</h3>
+                            <h3>Encontristas</h3>
                             {isLoading ? (
                                 <Skeleton height="2rem" width="60%" />
                             ) : (
@@ -68,7 +68,7 @@ const Dashboard = () => {
 
                     <Card className={styles.statCard}>
                         <div className={styles.statInfo}>
-                            <h3>Trabalhadores</h3>
+                            <h3>Encontreiros</h3>
                             {isLoading ? (
                                 <Skeleton height="2rem" width="60%" />
                             ) : (
@@ -114,7 +114,7 @@ const Dashboard = () => {
                 <div className={styles.actions}>
                     <Card className={styles.actionCard} onClick={() => navigate('/admin/inscricoes')}>
                         <h3>📋 Inscrições</h3>
-                        <p>Gerencie todos os participantes e trabalhadores em um só lugar.</p>
+                        <p>Gerencie todos os encontristas e encontreiros em um só lugar.</p>
                     </Card>
 
                     {user?.role === 'ADMIN' && (
@@ -126,7 +126,7 @@ const Dashboard = () => {
 
                     <Card className={styles.actionCard} onClick={() => navigate('/admin/trabalhadores/funcoes')}>
                         <h3>🗺️ Equipes</h3>
-                        <p>Distribuição de trabalhadores por função e grupo funcional.</p>
+                        <p>Distribuição de encontreiros por função e grupo funcional.</p>
                     </Card>
 
                     <Card className={styles.actionCard} onClick={() => navigate('/')}>

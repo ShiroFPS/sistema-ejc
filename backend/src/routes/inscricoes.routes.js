@@ -9,6 +9,7 @@ import {
     criar,
     verificarCpf,
     buscar,
+    excluir,
 } from '../controllers/inscricoes.controller.js';
 import { authMiddleware, requireRole } from '../middlewares/auth.middleware.js';
 
@@ -26,5 +27,6 @@ router.get('/:id', authMiddleware, getById);
 router.put('/:id', authMiddleware, atualizar);
 router.patch('/:id/aprovar', authMiddleware, aprovar);
 router.patch('/:id/rejeitar', authMiddleware, rejeitar);
+router.delete('/:id', authMiddleware, excluir);
 
 export default router;

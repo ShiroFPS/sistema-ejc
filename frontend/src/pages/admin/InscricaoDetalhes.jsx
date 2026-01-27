@@ -94,6 +94,23 @@ const InscricaoDetalhes = () => {
                         <Button onClick={downloadFicha} variant="primary">
                             Exportar PDF
                         </Button>
+                        <Button
+                            onClick={async () => {
+                                if (window.confirm('Tem certeza que deseja EXCLUIR permanentemente esta inscrição?')) {
+                                    try {
+                                        await api.delete(`/inscricoes/${id}?tipo=${isTrabalhador ? 'TRABALHADOR' : 'PARTICIPANTE'}`);
+                                        toast.success('Inscrição excluída com sucesso');
+                                        navigate('/admin/inscricoes');
+                                    } catch (error) {
+                                        toast.error('Erro ao excluir inscrição');
+                                    }
+                                }
+                            }}
+                            variant="secondary"
+                            style={{ backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                        >
+                            Excluir
+                        </Button>
                     </div>
                 </div>
 
@@ -101,7 +118,7 @@ const InscricaoDetalhes = () => {
                     <h1 className={styles.title}>{displayNome}</h1>
                     <div className={styles.badges}>
                         <span className={`${styles.badge} ${styles[inscricao.tipo || (isTrabalhador ? 'TRABALHADOR' : 'PARTICIPANTE')]}`}>
-                            {inscricao.tipo || (isTrabalhador ? 'TRABALHADOR' : 'PARTICIPANTE')}
+                            {(inscricao.tipo === 'TRABALHADOR' || (isTrabalhador && !inscricao.tipo)) ? 'ENCONTREIRO' : 'ENCONTRISTA'}
                         </span>
                         <span className={`${styles.badge} ${styles[inscricao.status]}`}>
                             {inscricao.status}
@@ -116,7 +133,7 @@ const InscricaoDetalhes = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     <Card>
-                        <h2 className={styles.sectionTitle}>👤 Informações Pessoais {isTrabalhador ? '(Pessoa 1)' : ''}</h2>
+                        <h2 className={styles.sectionTitle}>👤 Informações Pessoais {inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? '(Pessoa 1)' : ''}</h2>
                         <div className={styles.grid}>
                             {renderField('Nome Completo', isTrabalhador ? inscricao.nomeCompleto1 : inscricao.nomeCompleto)}
                             {renderField('Apelido', inscricao.apelido)}

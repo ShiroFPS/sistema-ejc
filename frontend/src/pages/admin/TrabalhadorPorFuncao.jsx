@@ -58,7 +58,7 @@ const TrabalhadorPorFuncao = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Trabalhadores por Função</h1>
+                    <h1 className={styles.title}>Encontreiros por Função</h1>
                     <p className={styles.subtitle}>Agrupamento e organização das equipes</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -81,7 +81,7 @@ const TrabalhadorPorFuncao = () => {
                             <div>
                                 <h2 className={styles.funcaoNome}>{funcao}</h2>
                                 <p className={styles.funcaoCount}>
-                                    {dados.total} {dados.total === 1 ? 'trabalhador' : 'trabalhadores'}
+                                    {dados.total} {dados.total === 1 ? 'encontreiro' : 'encontreiros'}
                                 </p>
                             </div>
                             <span className={styles.toggleIcon}>
@@ -92,7 +92,7 @@ const TrabalhadorPorFuncao = () => {
                         {expandidos[funcao] && (
                             <div className={styles.trabalhadores}>
                                 {dados.trabalhadores.length === 0 ? (
-                                    <p className={styles.vazio}>Nenhum trabalhador nesta função</p>
+                                    <p className={styles.vazio}>Nenhum encontreiro nesta função</p>
                                 ) : (
                                     dados.trabalhadores.map((trabalhador) => (
                                         <div key={trabalhador.id} className={styles.trabalhador}>

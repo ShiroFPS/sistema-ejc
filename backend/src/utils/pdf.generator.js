@@ -59,7 +59,8 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             // Cabeçalho
             doc.fontSize(18).text('FICHA DE ENTREVISTA - EJC', { align: 'center' });
             doc.moveDown();
-            doc.fontSize(10).text(`Tipo: ${inscricao.tipo}`, { align: 'center' });
+            const displayTipo = inscricao.tipo === 'TRABALHADOR' ? 'ENCONTREIRO' : 'ENCONTRISTA';
+            doc.fontSize(10).text(`Tipo: ${displayTipo}`, { align: 'center' });
             if (inscricao.grupoFuncional) {
                 doc.text(`Grupo Funcional: ${inscricao.grupoFuncional}`, { align: 'center' });
             }
