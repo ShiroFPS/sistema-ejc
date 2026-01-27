@@ -1,0 +1,135 @@
+--- WORKBOOK REPORT ---
+Total Sheets: 19
+
+[1] Sheet: "Jotas"
+Row 1: Nº | NOME | TELEFONE | PASTA |  |  |  |  |  | 
+Row 2: 1 | Daniel Dantas  | (83) 9 8744-1004 | J Comunicação  | H |  |  |  |  | 
+Row 3: 2 | Jonathas Bezerra | (83) 9 9888-2288 | J Montagem  | H |  |  |  |  | 
+Row 4: 3 | João Edson Lemos | (83) 9 8724-4737 | J Pastoral  | H |  |  |  |  | 
+Row 5: 4 | Natália Dantas | (83) 9 8188-4055 | J Finanças  | M |  |  |  |  | 
+
+[2] Sheet: "Geral"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  |  |  |  |  | 
+Row 2: 1 | George Marques | (83) 99630-7028 |  | COORD |  |  |  |  | 
+Row 3: 2 | Letícia Lima | (83) 99644-3552 |  | COORD |  |  |  |  | 
+Row 4: 3 | Renata Cavalcanti e Bruno Ávila | (83) 9 9620-6078 |  | COORD |  |  |  |  | 
+Row 5:  |  |  |  |  |  |  |  |  | 
+
+[3] Sheet: "Círculos"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Antônio Neto | (83) 99658-6607 |  | COORD |  |  |  |  | 
+Row 3: 2 | Marina Leite  | (83) 9 9952-4696 |  | COORD |  |  |  |  | 
+Row 4: 3 | Ney Junior e Karine Montenegro | (83) 9 9605-2100 / (83) 9 9654-5296 |  | COORD |  |  |  |  | 
+Row 5: 4 | Aline Ventura | (83) 99607-2638 |  | M |  |  |  |  | 
+
+[4] Sheet: "Apresentadores"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  |  |  |  |  | 
+Row 2: 1 | Luiz Felipe Duarte | (86) 99431-7979 |  | M |  |  |  |  | 
+Row 3: 2 | Ravenna Formiga | (83) 9 9841-8850 |  | H |  |  |  |  | 
+Row 4:  |  |  |  |  |  |  |  |  | 
+Row 5:  |  |  | Casal | [object Object] |  |  |  |  | 
+
+[5] Sheet: "Boa Vontade"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Victor Gabriel Costa Campos de Azevedo | (83) 9 8811-1307 |  | COORD |  |  |  |  | 
+Row 3: 2 | Eduarda Muniz | (83) 986735613 |  | COORD |  |  |  |  | 
+Row 4: 3 | Rodrigo Carneiro e Cynthia Brandão | (83) 9 8895-1598 |  | C |  |  |  |  | 
+Row 5: 4 | Allana Marcolino e Yago Marcolino | (83) 9 9896-9009 / (83) 9 9634-7471 |  | C |  |  |  |  | 
+
+[6] Sheet: "Tráfego"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Thiago Emmanuel de Melo Benevides Pessôa  | 83 99944-8944  |  | COORD |  |  |  |  | 
+Row 3: 2 | Nicole Macedo Vidal de Negreiros  | (83) 9 9832-2009 |  | COORD |  |  |  |  | 
+Row 4: 3 | Amanda mafra e Vitor Pacífico Feitosa | (83) 9 9872-5752 / (83) 9 8721-5868 |  | C |  |  |  |  | 
+Row 5: 4 | Larissa de França Campos e Thiago Brito Lira Regis de Amorim | 83) 98770-5956 e (83) 98723-5283 |  | C |  |  |  |  | 
+
+[7] Sheet: "Banda"
+Row 1:  | NOME | TELEFONE | EMAIL |  |  |  |  |  | 
+Row 2: 1 | Alysson Teotônio | (83) 9 9985-5083 |  | COORD |  |  |  |  | 
+Row 3: 2 | Andressa Gomes Pereira  | (83) 9 8728-2593 |  | COORD |  |  |  |  | 
+Row 4: 3 | Anna Raquel Serrano e Fábio Almeida | (83) 9 9921-1001 / (83) 9 8885-6023 |  | C |  |  |  |  | 
+Row 5: 4 | Pân Cruz e Túlio | (83) 9 8840-0337 |  | C |  |  |  |  | 
+
+[8] Sheet: "Cozinha"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Karla Cosmo | (83) 9 9303-1253 |  | COORD |  |  |  |  | 
+Row 3: 2 | Victor de Medeiros Gomes  | (83) 9 9620-2629 |  | COORD |  |  |  |  | 
+Row 4: 3 | Orlando Junior e Debora | (83) 9 9922-7013 / (83) 9 9927-0643 |  | C |  |  |  |  | 
+Row 5: 4 | Régis Moura e Byanka Melo | (83) 99900-0711 / (83) 98849-3918 |  | C |  |  |  |  | 
+
+[9] Sheet: "Externa"
+Row 1: CASAIS | CASAIS | CASAIS | CASAIS | CASAIS | CASAIS |  | SOLTEIROS | SOLTEIROS | SOLTEIROS
+Row 2: Nº | NOME | TELEFONE | EMAIL |  | OBSERVAÇÃO |  | Nº | NOME | TELEFONE
+Row 3: 1 | Raissa Pombo | (83) 99634-0725 |  | COORD |  |  | 11 |  | 
+Row 4: 2 |  Wendel Tavares Fontana (Azul Ano XXVII) | (81) 9 9972-7826 |  | COORD |  |  | 12 | Beatriz Paiva Paulo Neto  | (83) 9 9691-2252
+Row 5: 3 | Luisa Zacarias e Juliano Taner | (83) 9 9971-2779 / (83) 9 8747-1212 |  | COORD |  |  | 4 |  | 
+
+[10] Sheet: "Lanche"
+Row 1:   | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Ana Valéria França | (83) 9 9815-9553 |  | COORD |  |  |  |  | 
+Row 3: 2 | Sebastião Alves Lins Neto | (83) 9 8203-1339 |  | COORD |  |  |  |  | 
+Row 4: 4 | Elaine e Marcelo | (83) 98781-0076 |  | C |  |  |  |  | 
+Row 5: 5 | Rodrigo Carneiro e Lucia Jacqueline | (83)988683100 |  | C |  |  |  |  | 
+
+[11] Sheet: "Liturgia e Vigília"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Maria Beatriz Lucena | (83) 9 8711-0020 |  | COORD |  |  |  |  | 
+Row 3: 2 | Evllon Évirg Sá Sousa | 83998346861 |  | COORD |  |  |  |  | 
+Row 4: 4 | Thaynara Sarmento Oliveira de Almeida e Salomão Nathan | (83) 9 9925-6785 / (83) 9 9375-0570 |  | C |  |  |  |  | 
+Row 5: 5 | Júlia Jordão e Paulo Ferreira | (83) 9 9167-6080 / (83) 9 9903-7683 |  | C |  |  |  |  | 
+
+[12] Sheet: "Trânsito e Recepção"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Iaelly Lopes Gadelha   | (83) 9 9674-7663 |  | COORD |  |  |  |  | 
+Row 3: 2 | Pedro Ivo Tavares Trindade | (83) 999954-2705 |  | COORD |  |  |  |  | 
+Row 4: 4 | Rafael Oliveira de Carvalho e Nathália Marina Plácido | (83) 9 8760-6266 |  | C |  |  |  |  | 
+Row 5: 6 | Dandara e Eltton  | (83) 9 8703-6860 / (83) 9 9167-3733 |  | C |  |  |  |  | 
+
+[13] Sheet: "Minibox"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Henrique Batista | (83) 99964-1975 |  | COORD |  |  |  |  | 
+Row 3: 2 | Camille Lima | (83) 9 8787-2818 |  | COORD |  |  |  |  | 
+Row 4: 4 | Marcio e Martha | (83) 99983-4308 |  | C |  |  |  |  | 
+Row 5: 6 | Carlos e Rosangela | 8399622-1928 e 83996231933 |  | C |  |  |  |  | 
+
+[14] Sheet: "Sociodrama"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Thyago Santos | (83) 99901-1933 |  | COORD |  |  |  |  | 
+Row 3: 2 | Maria Eduarda Araújo Toscana de Moraes  | (83) 99380-5050 |  | COORD |  |  |  |  | 
+Row 4: 3 | Renata Lacerda e Alexandre Madruga | (83) 9 9943-4766 / (83) 9 8795-2161 |  | C |  |  |  |  | 
+Row 5:  | Maria Gabriela Moraes e Alisson Almeida | (83) 9 9647-2354 |  | C |  |  |  |  | 
+
+[15] Sheet: "Ordem"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Gustavo de Andrade Muniz  | (83) 98620-6040 |  | COORD |  |  |  |  | 
+Row 3: 2 | Clarice Bonifácio Chaves  | (83) 9 9823-2848 |  | COORD |  |  |  |  | 
+Row 4: 3 | Maria Betânia e Osório Adroaldo | (83) 9 8886-7544 / (83) 9 8886-7543 |  | C |  |  |  |  | 
+Row 5: 4 | Thayna Viegas e João Carlos | (83) 9 9605-6662 / (83) 9 8862-8221 |  | C |  |  |  |  | 
+
+[16] Sheet: "Secretaria"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Joana Frade de Holanda  | (81) 9 9845-3613 |  | COORD |  |  |  |  | 
+Row 3: 2 | Thiago Macedo Negreiros | (83) 99627-2749 |  | COORD |  |  |  |  | 
+Row 4: 4 | Edson Paula e Silvia Maria | 83991005281 e 83991052325 |  | C |  |  |  |  | 
+Row 5: 5 | Danielle Abrantes Sarmento e Rhafael Sarmento | 83996555291 e 83987300469 |  | C |  |  |  |  | 
+
+[17] Sheet: "Som e Iluminação"
+Row 1: Nº | NOME | TELEFONE | EMAIL |  | Observação/Motivo |  |  |  | 
+Row 2: 1 | Bianca Ventura de Melo | (83) 9 9649-4567 |  | COORD |  |  |  |  | 
+Row 3: 2 | Douglas Pereira de Moura Filho | (83) 9 9636-1289 |  | COORD |  |  |  |  | 
+Row 4: 3 | Karina Ruiz e Leandro Paiva  | (83) 9 8715-3822 / (83) 9 9945-0701 |  | C |  |  |  |  | 
+Row 5: 4 | João Victor Peixoto Soares e Kareen Elleen | 83987956009 |  | C |  |  |  |  | 
+
+[18] Sheet: "Cálculos"
+Row 1: Coordenadores jovens | Coordenadores jovens | [object Object] |  |  |  |  |  |  | 
+Row 2: J7 | J7 | 7 |  |  |  |  |  |  | 
+Row 3: Casais: | Casais: | [object Object] |  |  |  |  |  |  | 
+Row 4: Homens: | Homens: | [object Object] |  |  |  |  |  |  | 
+Row 5: Mulheres: | Mulheres: | [object Object] |  |  |  |  |  |  | 
+
+[19] Sheet: "Espera"
+Row 1:  | LISTA DE ESPERA | LISTA DE ESPERA | LISTA DE ESPERA | LISTA DE ESPERA | LISTA DE ESPERA |  |  |  | 
+Row 2:  | NOME | TELEFONE | EMAIL |  | Observação/Motivo/Indicação |  |  |  | 
+Row 3:  | MULHERES | MULHERES | MULHERES | MULHERES | MULHERES |  |  |  | 
+Row 4:  |  |  |  | H |  |  |  |  | 
+Row 5:  |  |  |  | H |  |  |  |  | 

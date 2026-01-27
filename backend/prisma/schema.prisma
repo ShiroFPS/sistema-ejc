@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -31,6 +31,7 @@ model InscricaoParticipante {
   // Crachá
   codigoVerificacao String   @unique @default(cuid()) // Código único de 6 dígitos (gerado no backend)
   corCracha         String?  // VERDE, AMARELO, VERMELHO (atribuído pelo admin)
+  corGrupo          String?  // Cores do grupo: VERMELHO, VERDE, LARANJA, AZUL, AMARELO
   
   // LGPD
   lgpdCiente        Boolean  @default(false)
@@ -40,8 +41,14 @@ model InscricaoParticipante {
   apelido           String
   dataNascimento    String   // Armazenado como texto no SQLite
   sexo              String   // MASCULINO ou FEMININO
+  cpf               String?  @unique // CPF único para participantes
+  email             String?
   telefone          String
   instagram         String?
+  
+  // Notificações
+  receberEmail      Boolean  @default(true)
+  receberWhatsapp   Boolean  @default(true)
   
   // Estado civil e escolaridade
   estadoCivil       String   // SOLTEIRO, CASADO, UNIAO_ESTAVEL, DIVORCIADO, VIUVO
@@ -93,6 +100,11 @@ model InscricaoParticipante {
   updatedAt         DateTime @updatedAt
   
   @@map("inscricoes_participantes")
+  @@index([status])
+  @@index([nomeCompleto])
+  @@index([cpf])
+  @@index([status, createdAt])
+  @@index([nomeCompleto, status])
 }
 
 // Modelo para Trabalhadores/Encontreiros (campos específicos)
@@ -106,7 +118,8 @@ model InscricaoTrabalhador {
   codigoVerificacao     String   @unique @default(cuid()) // Código único de 6 dígitos (gerado no backend)
   corCracha             String?  // VERDE, AMARELO, VERMELHO (atribuído pelo admin)
   funcaoTrabalhador     String?  // Função específica atribuída pelo admin
-  apelido               String?  // Nome para o Crachá (frente)
+  apelido               String?  // Nome para o Crachá (frente) - Pessoa 1
+  apelido2              String?  // Nome para o Crachá (frente) - Pessoa 2
   
   // Tipo de inscrição
   tipoInscricao         String   // CASAIS_UNIAO_ESTAVEL ou SOLTEIRO
@@ -116,13 +129,23 @@ model InscricaoTrabalhador {
   
   // Pessoa 1
   nomeCompleto1         String
+  cpf1                  String?  // CPF da Pessoa 1
   contato1              String
   instagram1            String
+  sexo1                 String?
+  dataNascimento1       DateTime?
   
   // Pessoa 2 (opcional se solteiro)
   nomeCompleto2         String?
+  cpf2                  String?  // CPF da Pessoa 2
   contato2              String?
   instagram2            String?
+  sexo2                 String?
+  dataNascimento2       DateTime?
+
+  // Notificações
+  receberEmail          Boolean  @default(true)
+  receberWhatsapp       Boolean  @default(true)
   
   // Endereço
   enderecoCompleto      String
@@ -148,6 +171,12 @@ model InscricaoTrabalhador {
   updatedAt             DateTime @updatedAt
   
   @@map("inscricoes_trabalhadores")
+  @@index([status])
+  @@index([grupoFuncional])
+  @@index([cpf1])
+  @@index([cpf2])
+  @@index([status, createdAt])
+  @@index([funcaoTrabalhador, status])
 }
 
 model Configuracao {

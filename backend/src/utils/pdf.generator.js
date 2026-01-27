@@ -4,13 +4,48 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const gerarFichaEntrevista = async (inscricaoId) => {
-    const inscricao = await prisma.inscricao.findUnique({
+    let inscricao = await prisma.inscricaoParticipante.findUnique({
         where: { id: inscricaoId },
     });
+    let tipoInscricao = 'PARTICIPANTE';
+
+    if (!inscricao) {
+        inscricao = await prisma.inscricaoTrabalhador.findUnique({
+            where: { id: inscricaoId },
+        });
+        tipoInscricao = 'TRABALHADOR';
+    }
 
     if (!inscricao) {
         throw new Error('Inscrição não encontrada');
     }
+
+    // Normalizar dados do trabalhador para o formato esperado pelo PDF
+    if (tipoInscricao === 'TRABALHADOR') {
+        inscricao.nomeCompleto = inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
+            ? `${inscricao.nomeCompleto1} & ${inscricao.nomeCompleto2 || ''}`
+            : inscricao.nomeCompleto1;
+
+        inscricao.apelido = inscricao.apelido || inscricao.apelido2 || ''; // Usa o primeiro ou o segundo
+        inscricao.dataNascimento = inscricao.dataNascimento1 ? inscricao.dataNascimento1.toISOString() : new Date().toISOString(); // Fallback
+        inscricao.sexo = inscricao.sexo1;
+        inscricao.telefone = inscricao.contato1;
+        inscricao.instagram = inscricao.instagram1;
+        inscricao.profissao = inscricao.areaTrabalhoEstudo || 'Não informado';
+        inscricao.trabalha = inscricao.trabalhamOuEstudam;
+        // Campos que não existem no trabalhador ou são diferentes, definimos vazio ou adaptamos
+        inscricao.escolaridade = '';
+        inscricao.localTrabalho = '';
+        inscricao.estadoCivil = inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'CASADO/UNIÃO' : 'SOLTEIRO';
+        inscricao.bairro = ''; // Trabalhador só tem enderecoCompleto
+        inscricao.nomeMae = '';
+        inscricao.nomePai = '';
+        inscricao.telefoneMae = '';
+        inscricao.telefonePai = '';
+        inscricao.moraComQuem = '';
+    }
+
+    inscricao.tipo = tipoInscricao; // Adiciona o tipo para exibição
 
     return new Promise((resolve, reject) => {
         try {
@@ -103,15 +138,46 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
 };
 
 export const gerarListaPresenca = async (filtros = {}) => {
-    const where = {};
-    if (filtros.tipo) where.tipo = filtros.tipo;
-    if (filtros.grupoFuncional) where.grupoFuncional = filtros.grupoFuncional;
-    if (filtros.status) where.status = filtros.status;
+    let inscricoes = [];
 
-    const inscricoes = await prisma.inscricao.findMany({
-        where,
-        orderBy: { nomeCompleto: 'asc' },
-    });
+    // Buscar Participantes
+    if (!filtros.tipo || filtros.tipo === 'PARTICIPANTE') {
+        const where = {};
+        if (filtros.status) where.status = filtros.status;
+        if (filtros.corGrupo) where.corGrupo = filtros.corGrupo; // Suportar filtro de cor
+
+        const parts = await prisma.inscricaoParticipante.findMany({
+            where,
+            orderBy: { nomeCompleto: 'asc' },
+        });
+        inscricoes = [...inscricoes, ...parts.map(p => ({ ...p, tipo: 'PARTICIPANTE' }))];
+    }
+
+    // Buscar Trabalhadores
+    if (!filtros.tipo || filtros.tipo === 'TRABALHADOR') {
+        const where = {};
+        if (filtros.status) where.status = filtros.status;
+        if (filtros.grupoFuncional) where.grupoFuncional = filtros.grupoFuncional;
+        if (filtros.funcaoTrabalhador) where.funcaoTrabalhador = filtros.funcaoTrabalhador;
+
+        const trabs = await prisma.inscricaoTrabalhador.findMany({
+            where,
+        }); // Trabalhadores precisam de normalização de nome para ordenação
+
+        const trabsNormalized = trabs.map(t => ({
+            ...t,
+            tipo: 'TRABALHADOR',
+            nomeCompleto: t.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
+                ? `${t.nomeCompleto1} & ${t.nomeCompleto2}`
+                : t.nomeCompleto1,
+            telefone: t.contato1
+        }));
+
+        inscricoes = [...inscricoes, ...trabsNormalized];
+    }
+
+    // Ordenar final por Nome
+    inscricoes.sort((a, b) => a.nomeCompleto.localeCompare(b.nomeCompleto));
 
     return new Promise((resolve, reject) => {
         try {

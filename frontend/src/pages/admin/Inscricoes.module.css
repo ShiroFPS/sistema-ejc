@@ -1,22 +1,45 @@
 .container {
     min-height: 100vh;
-    padding: var(--spacing-2xl) var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg);
     max-width: 1400px;
     margin: 0 auto;
+    position: relative;
+}
+
+.blob {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: var(--color-primary-500);
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.blob1 {
+    top: 100px;
+    left: -50px;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--glass-border);
 }
 
 .title {
     font-size: var(--font-size-3xl);
-    font-weight: 700;
-    color: var(--color-text-primary);
+    font-weight: 800;
     margin-bottom: var(--spacing-xs);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
@@ -31,66 +54,55 @@
 
 .filters {
     margin-bottom: var(--spacing-xl);
+    background: var(--gradient-glass);
 }
 
 .filterTitle {
     font-size: var(--font-size-lg);
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    color: var(--color-text-primary);
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
 }
 
 .filterGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-lg);
 }
 
-.filterGrid label {
-    display: block;
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.filterGroup label {
     font-size: var(--font-size-sm);
+    font-weight: 500;
     color: var(--color-text-secondary);
-    margin-bottom: var(--spacing-xs);
 }
 
 .select,
 .input {
     width: 100%;
-    padding: 0.5rem;
-    background: rgba(30, 30, 30, 0.95);
-    /* Fundo escuro sólido */
+    padding: 0.75rem 1rem;
+    background-color: var(--color-bg-tertiary);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-xl);
     color: var(--color-text-primary);
-    /* Texto branco/claro */
     font-size: var(--font-size-base);
     transition: all 0.2s ease;
+}
+
+.select option {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
 }
 
 .select:focus,
 .input:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    background: rgba(30, 30, 30, 1);
-}
-
-.select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a3a3a3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
-}
-
-.select option {
-    background: #1a1a1a;
-    color: var(--color-text-primary);
-}
-
-.searchBox {
-    position: relative;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .list {
@@ -101,108 +113,95 @@
 
 .inscricaoCard {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.inscricaoHeader {
-    display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-md);
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
 }
 
-.inscricaoHeader h3 {
+.inscricaoInfo h3 {
     font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
+    font-weight: 700;
     margin-bottom: var(--spacing-xs);
 }
 
-.inscricaoHeader p {
+.inscricaoInfo p {
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
 }
 
 .badges {
     display: flex;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
+    gap: var(--spacing-xs);
 }
 
 .badge {
     padding: 0.25rem 0.75rem;
     border-radius: var(--radius-full);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
+    font-size: 0.65rem;
+    font-weight: 800;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
 }
 
 .badge.PARTICIPANTE {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
+    background: rgba(0, 68, 204, 0.1);
+    color: var(--color-primary-400);
+    border-color: rgba(0, 68, 204, 0.2);
 }
 
 .badge.TRABALHADOR {
-    background: rgba(139, 92, 246, 0.2);
-    color: #8b5cf6;
+    background: rgba(214, 0, 0, 0.1);
+    color: var(--color-secondary-500);
+    border-color: rgba(214, 0, 0, 0.2);
 }
 
 .badge.PENDENTE {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--color-accent-500);
+    border-color: rgba(251, 191, 36, 0.2);
 }
 
 .badge.APROVADA {
-    background: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.1);
     color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
 }
 
 .badge.REJEITADA {
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
-}
-
-.badge.VERMELHO {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-.badge.VERDE {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
-}
-
-.badge.AMARELO {
-    background: rgba(234, 179, 8, 0.2);
-    color: #eab308;
+    border-color: rgba(239, 68, 68, 0.2);
 }
 
 .inscricaoActions {
     display: flex;
     gap: var(--spacing-sm);
-    flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+    .inscricaoCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .inscricaoActions {
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
+        align-items: flex-start;
         gap: var(--spacing-md);
     }
 
     .headerActions {
-        flex-direction: column;
         width: 100%;
-    }
-
-    .filterGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .inscricaoHeader {
-        flex-direction: column;
-    }
-
-    .inscricaoActions {
         flex-direction: column;
     }
 }

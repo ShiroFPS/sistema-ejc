@@ -1,6 +1,82 @@
-import { PrismaClient } from '@prisma/client';
+import { InscricaoService } from '../services/inscricao.service.js';
+import { participanteSchema } from '../schemas/inscricao.schema.js';
+import { prisma } from '../utils/prisma.js';
 
-const prisma = new PrismaClient();
+// Criar inscrição (participante)
+export const criar = async (req, res, next) => {
+    try {
+        const validatedData = participanteSchema.parse(req.body);
+
+        // Verificar limites e data limite
+        const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+        if (config.dataLimiteInscricoes && new Date() > new Date(config.dataLimiteInscricoes)) {
+            return res.status(400).json({ error: 'Prazo de inscrições encerrado' });
+        }
+
+        const count = await prisma.inscricaoParticipante.count();
+        if (count >= config.limiteParticipantes) {
+            return res.status(400).json({ error: 'Limite de vagas para participantes atingido' });
+        }
+
+        const inscricao = await InscricaoService.criarParticipante(validatedData);
+
+        res.status(201).json(inscricao);
+    } catch (error) {
+        if (error.name === 'ZodError') {
+            return res.status(400).json({ error: 'Dados inválidos', details: error.errors });
+        }
+        next(error);
+    }
+};
+
+// Verificar CPF ou Nome (público)
+export const verificarCpf = async (req, res, next) => {
+    try {
+        const { cpf, nome, tipo } = req.query;
+
+        if (!cpf && !nome) return res.status(400).json({ error: 'Identificador não informado' });
+
+        let existe = false;
+        let dados = null;
+
+        const where = { OR: [] };
+        if (cpf) {
+            if (tipo === 'TRABALHADOR') {
+                where.OR.push({ cpf1: cpf }, { cpf2: cpf });
+            } else {
+                where.OR.push({ cpf: cpf });
+            }
+        }
+        if (nome) {
+            if (tipo === 'TRABALHADOR') {
+                where.OR.push(
+                    { nomeCompleto1: { equals: nome, mode: 'insensitive' } },
+                    { nomeCompleto2: { equals: nome, mode: 'insensitive' } }
+                );
+            } else {
+                where.OR.push({ nomeCompleto: { equals: nome, mode: 'insensitive' } });
+            }
+        }
+
+        if (tipo === 'TRABALHADOR') {
+            const t = await prisma.inscricaoTrabalhador.findFirst({ where });
+            if (t) {
+                existe = true;
+                dados = { nome: t.nomeCompleto1, status: t.status };
+            }
+        } else {
+            const p = await prisma.inscricaoParticipante.findFirst({ where });
+            if (p) {
+                existe = true;
+                dados = { nome: p.nomeCompleto, status: p.status };
+            }
+        }
+
+        res.json({ existe, dados });
+    } catch (error) {
+        next(error);
+    }
+};
 
 // Listar inscrições combinadas (admin)
 export const listar = async (req, res, next) => {
@@ -37,7 +113,14 @@ export const listar = async (req, res, next) => {
                 take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
                 orderBy: { createdAt: 'desc' },
             });
-            inscricoes = [...inscricoes, ...trabalhadores.map(t => ({ ...t, tipo: 'TRABALHADOR' }))];
+            inscricoes = [...inscricoes, ...trabalhadores.map(t => ({
+                ...t,
+                tipo: 'TRABALHADOR',
+                nomeCompleto: t.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
+                    ? `${t.nomeCompleto1} & ${t.nomeCompleto2}`
+                    : t.nomeCompleto1,
+                telefone: t.contato1,
+            }))];
             total += await prisma.inscricaoTrabalhador.count({ where: trabalhadoresWhere });
         }
 
@@ -170,6 +253,90 @@ export const getById = async (req, res, next) => {
         }
 
         res.json(inscricao);
+    } catch (error) {
+        next(error);
+    }
+};
+// Atualizar inscrição
+export const atualizar = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { tipo } = req.query;
+        const data = req.body;
+
+        let inscricao;
+        if (tipo === 'TRABALHADOR') {
+            // Limpar campos de data
+            if (data.dataNascimento1 && typeof data.dataNascimento1 === 'string') data.dataNascimento1 = new Date(data.dataNascimento1);
+            if (data.dataNascimento2 && typeof data.dataNascimento2 === 'string') data.dataNascimento2 = new Date(data.dataNascimento2);
+
+            inscricao = await prisma.inscricaoTrabalhador.update({
+                where: { id },
+                data: data,
+            });
+        } else {
+            inscricao = await prisma.inscricaoParticipante.update({
+                where: { id },
+                data: data,
+            });
+        }
+
+        res.json(inscricao);
+    } catch (error) {
+        next(error);
+    }
+};
+// Buscar inscrições (admin)
+export const buscar = async (req, res, next) => {
+    try {
+        const { query } = req.query;
+
+        if (!query) {
+            return res.json({ inscricoes: [] });
+        }
+
+        const [participantes, trabalhadores] = await Promise.all([
+            prisma.inscricaoParticipante.findMany({
+                where: {
+                    OR: [
+                        { nomeCompleto: { contains: query } },
+                        { apelido: { contains: query } },
+                        { cpf: { contains: query } },
+                        { email: { contains: query } },
+                    ],
+                },
+                take: 50,
+            }),
+            prisma.inscricaoTrabalhador.findMany({
+                where: {
+                    OR: [
+                        { nomeCompleto1: { contains: query } },
+                        { nomeCompleto2: { contains: query } },
+                        { email: { contains: query } },
+                        { cpf1: { contains: query } },
+                        { cpf2: { contains: query } },
+                    ],
+                },
+                take: 50,
+            }),
+        ]);
+
+        const total = [
+            ...participantes.map(p => ({ ...p, tipo: 'PARTICIPANTE' })),
+            ...trabalhadores.map(t => ({
+                ...t,
+                tipo: 'TRABALHADOR',
+                nomeCompleto: t.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
+                    ? `${t.nomeCompleto1} & ${t.nomeCompleto2}`
+                    : t.nomeCompleto1,
+                telefone: t.contato1,
+            })),
+        ];
+
+        // Ordenar por data
+        total.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        res.json({ inscricoes: total.slice(0, 50) });
     } catch (error) {
         next(error);
     }

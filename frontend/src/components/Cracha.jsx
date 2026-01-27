@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Cracha.module.css';
 import logoEjc from '../assets/logo-ejc.jpg';
 
-const Cracha = ({ inscricao, tipo, lado = 'frente' }) => {
+const Cracha = ({ inscricao, tipo, lado = 'frente', layout = 'vertical' }) => {
     const nome = tipo === 'trabalhador'
         ? (inscricao.apelido || inscricao.nomeCompleto1)
         : inscricao.apelido;
@@ -24,7 +24,7 @@ const Cracha = ({ inscricao, tipo, lado = 'frente' }) => {
 
     if (lado === 'frente') {
         return (
-            <div className={styles.cracha}>
+            <div className={`${styles.cracha} ${layout === 'vertical' ? styles.vertical : ''}`}>
                 {/* Faixa colorida lateral */}
                 <div className={styles.faixaCor} style={{ backgroundColor: corFaixa }}></div>
 
@@ -34,9 +34,11 @@ const Cracha = ({ inscricao, tipo, lado = 'frente' }) => {
                     </div>
 
                     <div className={styles.infoFrente}>
-                        <h2 className={styles.nomeFrente}>{nome}</h2>
+                        <div className={styles.nomeBox} style={{ backgroundColor: corFaixa }}>
+                            <h2 className={styles.nomeFrente}>{nome}</h2>
+                        </div>
                         {inscricao.funcaoTrabalhador && (
-                            <div className={styles.funcaoBox} style={{ backgroundColor: corFaixa }}>
+                            <div className={styles.funcaoBox}>
                                 <p className={styles.funcao}>{inscricao.funcaoTrabalhador}</p>
                             </div>
                         )}
@@ -48,7 +50,7 @@ const Cracha = ({ inscricao, tipo, lado = 'frente' }) => {
     }
 
     return (
-        <div className={styles.cracha}>
+        <div className={`${styles.cracha} ${layout === 'vertical' ? styles.vertical : ''}`}>
             <div className={styles.conteudoVerso}>
                 <div className={styles.topoVerso}>
                     <h3 className={styles.tituloVerso}>Encontro de Jovens com Cristo</h3>

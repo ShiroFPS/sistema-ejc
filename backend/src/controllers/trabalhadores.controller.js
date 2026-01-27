@@ -1,35 +1,19 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { InscricaoService } from '../services/inscricao.service.js';
+import { trabalhadorSchema } from '../schemas/inscricao.schema.js';
+import { prisma } from '../utils/prisma.js';
 
 // Criar inscrição de trabalhador
 export const criarTrabalhador = async (req, res, next) => {
     try {
-        const data = req.body;
+        const validatedData = trabalhadorSchema.parse(req.body);
 
-        // Verificar limites e data limite
-        const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
-
-        if (config.dataLimiteInscricoes && new Date() > new Date(config.dataLimiteInscricoes)) {
-            return res.status(400).json({ error: 'Prazo de inscrições encerrado' });
-        }
-
-        // Contar inscrições de trabalhadores
-        const count = await prisma.inscricaoTrabalhador.count();
-
-        if (count >= config.limiteTrabalhadores) {
-            return res.status(400).json({
-                error: 'Limite de vagas para trabalhadores atingido'
-            });
-        }
-
-        // Criar inscrição
-        const inscricao = await prisma.inscricaoTrabalhador.create({
-            data,
-        });
+        const inscricao = await InscricaoService.criarTrabalhador(validatedData);
 
         res.status(201).json(inscricao);
     } catch (error) {
+        if (error.name === 'ZodError') {
+            return res.status(400).json({ error: 'Dados inválidos', details: error.errors });
+        }
         next(error);
     }
 };
@@ -137,7 +121,16 @@ export const buscarTrabalhadores = async (req, res, next) => {
             take: 50,
         });
 
-        res.json({ inscricoes });
+        const normalized = inscricoes.map(t => ({
+            ...t,
+            tipo: 'TRABALHADOR',
+            nomeCompleto: t.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
+                ? `${t.nomeCompleto1} & ${t.nomeCompleto2}`
+                : t.nomeCompleto1,
+            telefone: t.contato1,
+        }));
+
+        res.json({ inscricoes: normalized });
     } catch (error) {
         next(error);
     }

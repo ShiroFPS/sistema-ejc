@@ -1,0 +1,17 @@
+Remover envio de comprovante;
+alterar o chachá para vertical
+exportar planilhas separadas por equipe (individual)
+botão de reprovação
+alterar tag de aprovado
+salvar por função e ano 
+Erro ao baixar ficha
+adicionar cores nos participantes ( vermelho, verde, laranja, azul, amarelo)
+trabalhadores = econtreiros 
+Participantes = encontristas
+gerar planilhas de econtristas por cor
+
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+:3000/api/inscricoes/6450153d-bce5-40ad-9967-f6f47580b2f6?tipo=TRABALHADOR:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+EditarTrabalhador.jsx:139 Erro ao salvar: AxiosError
+handleSalvar @ EditarTrabalhador.jsx:139
+:3000/api/export/pdf/ficha/54a0c81d-9261-4f87-8173-7c3c60f562a0:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)

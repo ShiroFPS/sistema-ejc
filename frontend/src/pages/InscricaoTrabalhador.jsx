@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -24,7 +25,6 @@ const InscricaoTrabalhador = () => {
 
     const onSubmit = async (data) => {
         setLoading(true);
-
         try {
             const inscricaoData = {
                 ...data,
@@ -34,10 +34,11 @@ const InscricaoTrabalhador = () => {
                 operaEquipamentosSom: data.operaEquipamentosSom === 'sim',
                 habilidadesComputador: data.habilidadesComputador === 'sim',
                 trabalhosManuais: data.trabalhosManuais === 'sim',
+                cpf1: data.cpf1?.replace(/\D/g, ''),
+                cpf2: data.cpf2?.replace(/\D/g, ''),
             };
 
             await api.post('/inscricoes/trabalhadores', inscricaoData);
-
             toast.success('Inscrição enviada com sucesso! Aguarde aprovação.');
             setTimeout(() => navigate('/'), 2000);
         } catch (error) {
@@ -49,298 +50,161 @@ const InscricaoTrabalhador = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.content}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>Inscrições para Encontreiros (Serviço)</h1>
-                    <p className={styles.subtitle}>XXIX EJC AUXILIADORA</p>
-                    {config && (
-                        <p className={styles.info}>
-                            Vagas restantes: {config.limiteTrabalhadores - (config.totalTrabalhadores || 0)}
-                        </p>
-                    )}
-                </div>
+            <div className={`${styles.blob} ${styles.blob1}`}></div>
+            <div className={`${styles.blob} ${styles.blob2}`}></div>
 
-                <Card>
-                    <h3 style={{ color: 'var(--color-primary-400)', marginBottom: 'var(--spacing-md)' }}>
-                        Atenção para as seguintes orientações:
-                    </h3>
-                    <ul style={{ color: 'var(--color-text-secondary)', lineHeight: 1.8, marginLeft: 'var(--spacing-lg)' }}>
-                        <li>A presente inscrição se destina aos encontreiros (pessoas que já fizeram EJC) e desejam integrar as equipes de serviço do XXVIII EJC AUXILIADORA.</li>
-                        <li><strong>NÃO</strong> é a inscrição para quem quer fazer o EJC pela primeira vez.</li>
-                        <li>A inscrição não garante o chamado ao serviço, o qual é feito de acordo com a disponibilidade das equipes.</li>
-                        <li>Os chamados são feitos por ligação telefônica: fiquem atentos aos celulares.</li>
-                    </ul>
-                    <p style={{ color: 'var(--color-warning)', marginTop: 'var(--spacing-md)', fontWeight: 600 }}>
-                        Obs.: Lembrando a todos que o <strong>primeiro serviço deve ser no seu EJC de origem</strong> (paróquia que fez seu EJC), segundo os direcionamentos da Arquidiocese.
-                    </p>
-                </Card>
+            <div className={styles.content}>
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={styles.header}
+                >
+                    <h1 className={styles.title}>Serviço e Doação</h1>
+                    <p className={styles.subtitle}>INSCRIÇÃO ENCONTREIROS - XXIX EJC</p>
+                    {config && (
+                        <div className={styles.info}>
+                            Vagas restantes: {config.limiteTrabalhadores - (config.totalTrabalhadores || 0)}
+                        </div>
+                    )}
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className={styles.guidelines}
+                >
+                    <Card>
+                        <h3 style={{ color: 'var(--color-primary-400)', marginBottom: 'var(--spacing-md)', fontWeight: 800 }}>
+                            ⚠️ Orientações Importantes
+                        </h3>
+                        <ul style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            <li>✓ Destinado a quem <strong>já fez EJC</strong> e deseja servir.</li>
+                            <li>✓ Não garante o chamado automático; depende da necessidade das equipes.</li>
+                            <li>✓ O primeiro serviço deve ser obrigatoriamente no seu <strong>EJC de origem</strong>.</li>
+                        </ul>
+                    </Card>
+                </motion.div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-                    {/* SEÇÃO 1: Email */}
                     <Card>
-                        <h2 className={styles.sectionTitle}>📧 Contato</h2>
-
-                        <Input
-                            label="E-mail"
-                            type="email"
-                            {...register('email', { required: 'Campo obrigatório' })}
-                            error={errors.email?.message}
-                            required
-                            placeholder="seu@email.com"
-                        />
-                    </Card>
-
-                    {/* SEÇÃO 2: Tipo de Inscrição */}
-                    <Card>
-                        <h2 className={styles.sectionTitle}>👥 Tipo de Inscrição</h2>
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Você é: *</label>
-                            <label className={styles.radio}>
-                                <input
-                                    type="radio"
-                                    {...register('tipoInscricao', { required: 'Campo obrigatório' })}
-                                    value="SOLTEIRO"
-                                />
-                                <span>Solteiro</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input
-                                    type="radio"
-                                    {...register('tipoInscricao', { required: 'Campo obrigatório' })}
-                                    value="CASAIS_UNIAO_ESTAVEL"
-                                />
-                                <span>Casado/União estável</span>
-                            </label>
-                            {errors.tipoInscricao && <span className={styles.error}>{errors.tipoInscricao.message}</span>}
-                        </div>
-                    </Card>
-
-                    {/* SEÇÃO 3: Dados das Pessoas - SEMPRE VISÍVEL (não condicional) */}
-                    <Card>
-                        <h2 className={styles.sectionTitle}>
-                            {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? '🎯 INSCRIÇÃO CASAIS E EM UNIÃO ESTÁVEL' : '👤 Dados Pessoais'}
-                        </h2>
-
-                        <h3 style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--spacing-md)', color: 'var(--color-text-primary)' }}>
-                            {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'Pessoa 1' : 'Nome Completo 1'}
-                        </h3>
-
-                        <Input
-                            label="Nome Completo 1"
-                            {...register('nomeCompleto1', { required: 'Campo obrigatório' })}
-                            error={errors.nomeCompleto1?.message}
-                            required
-                        />
-
-                        <Input
-                            label="Contato 1 (WhatsApp)"
-                            type="tel"
-                            {...register('contato1', { required: 'Campo obrigatório' })}
-                            error={errors.contato1?.message}
-                            required
-                            placeholder="(DDD) 9 XXXX-XXXX"
-                        />
-
-                        <Input
-                            label="Instagram 1"
-                            {...register('instagram1', { required: 'Campo obrigatório' })}
-                            error={errors.instagram1?.message}
-                            required
-                            placeholder="@seuinstagram"
-                        />
-
-                        {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' && (
-                            <>
-                                <h3 style={{ fontSize: 'var(--font-size-lg)', marginTop: 'var(--spacing-xl)', marginBottom: 'var(--spacing-md)', color: 'var(--color-text-primary)' }}>
-                                    Nome Completo 2
-                                </h3>
-
-                                <Input
-                                    label="Nome Completo 2"
-                                    {...register('nomeCompleto2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'Campo obrigatório' : false })}
-                                    error={errors.nomeCompleto2?.message}
-                                    required={tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'}
-                                />
-
-                                <Input
-                                    label="Contato 2 (WhatsApp)"
-                                    type="tel"
-                                    {...register('contato2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'Campo obrigatório' : false })}
-                                    error={errors.contato2?.message}
-                                    required={tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'}
-                                    placeholder="(DDD) 9 XXXX-XXXX"
-                                />
-
-                                <Input
-                                    label="Instagram 2"
-                                    {...register('instagram2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'Campo obrigatório' : false })}
-                                    error={errors.instagram2?.message}
-                                    required={tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'}
-                                    placeholder="@seuinstagram"
-                                />
-                            </>
-                        )}
-                    </Card>
-
-                    {/* SEÇÃO 4: Endereço e Trabalho/Estudo */}
-                    <Card>
-                        <h2 className={styles.sectionTitle}>🏠 Endereço e Trabalho/Estudo</h2>
-
-                        <Input
-                            label="Endereço Completo"
-                            {...register('enderecoCompleto', { required: 'Campo obrigatório' })}
-                            error={errors.enderecoCompleto?.message}
-                            required
-                        />
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Trabalham ou estudam? *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('trabalhamOuEstudam', { required: true })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('trabalhamOuEstudam', { required: true })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.trabalhamOuEstudam && <span className={styles.error}>Campo obrigatório</span>}
-                        </div>
-
-                        {trabalhamOuEstudam === 'sim' && (
+                        <h2 className={styles.sectionTitle}>📧 Identificação de Acesso</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
                             <Input
-                                label="Se sim, em qual área?"
-                                {...register('areaTrabalhoEstudo')}
-                                placeholder="Ex: Tecnologia, Saúde, Educação..."
+                                label="E-mail principal"
+                                type="email"
+                                {...register('email', { required: 'Campo obrigatório' })}
+                                error={errors.email?.message}
+                                placeholder="seu@email.com"
                             />
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Modalidade de Inscrição *</label>
+                                <select {...register('tipoInscricao', { required: true })} className={styles.select}>
+                                    <option value="">Selecione...</option>
+                                    <option value="SOLTEIRO">Inscrição Individual (Solteiro)</option>
+                                    <option value="CASAIS_UNIAO_ESTAVEL">Inscrição de Casal / União Estável</option>
+                                </select>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <AnimatePresence mode="popLayout">
+                        {tipoInscricao && (
+                            <motion.div
+                                key={tipoInscricao}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 10 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <Card>
+                                    <h2 className={styles.sectionTitle}>👤 {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'Dados do Casal' : 'Dados do Encontreiro'}</h2>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                                        <Input label="Nome Completo (Pessoa 1)" {...register('nomeCompleto1', { required: true })} />
+                                        <Input label="WhatsApp (Pessoa 1)" {...register('contato1', { required: true })} />
+                                        <Input label="CPF (Pessoa 1)" {...register('cpf1', { required: true })} />
+                                        <div className={styles.inputGroup}>
+                                            <label className={styles.label}>Sexo (Pessoa 1) *</label>
+                                            <select {...register('sexo1', { required: true })} className={styles.select}>
+                                                <option value="">Selecione...</option>
+                                                <option value="MASCULINO">Masculino</option>
+                                                <option value="FEMININO">Feminino</option>
+                                            </select>
+                                        </div>
+                                        <Input label="Data Nascimento (Pessoa 1)" type="date" {...register('dataNascimento1', { required: true })} />
+                                        <Input label="Instagram (Pessoa 1)" {...register('instagram1')} />
+                                        <Input label="Apelido para o Crachá 1" {...register('apelido', { required: true })} />
+                                    </div>
+
+                                    {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' && (
+                                        <div style={{ marginTop: '2.5rem', paddingTop: '2.5rem', borderTop: '1px solid var(--glass-border)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                                            <Input label="Nome Completo (Pessoa 2)" {...register('nomeCompleto2', { required: true })} />
+                                            <Input label="WhatsApp (Pessoa 2)" {...register('contato2', { required: true })} />
+                                            <Input label="CPF (Pessoa 2)" {...register('cpf2', { required: true })} />
+                                            <div className={styles.inputGroup}>
+                                                <label className={styles.label}>Sexo (Pessoa 2) *</label>
+                                                <select {...register('sexo2', { required: true })} className={styles.select}>
+                                                    <option value="">Selecione...</option>
+                                                    <option value="MASCULINO">Masculino</option>
+                                                    <option value="FEMININO">Feminino</option>
+                                                </select>
+                                            </div>
+                                            <Input label="Data Nascimento (Pessoa 2)" type="date" {...register('dataNascimento2', { required: true })} />
+                                            <Input label="Instagram (Pessoa 2)" {...register('instagram2')} />
+                                            <Input label="Apelido para o Crachá 2" {...register('apelido2', { required: true })} />
+                                        </div>
+                                    )}
+                                </Card>
+                            </motion.div>
                         )}
-                    </Card>
+                    </AnimatePresence>
 
-                    {/* SEÇÃO 5: Experiência no EJC */}
                     <Card>
-                        <h2 className={styles.sectionTitle}>✝️ Experiência no EJC</h2>
-
-                        <Input
-                            label="Paróquia em que fez EJC (ou ECC) e o ano"
-                            {...register('paroquiaEjcAno', { required: 'Campo obrigatório' })}
-                            error={errors.paroquiaEjcAno?.message}
-                            required
-                            placeholder="Ex: Paróquia Nossa Senhora Auxiliadora - 2019"
-                        />
-
-                        <div className={styles.inputGroup}>
-                            <label className={styles.label}>
-                                Em qual(is) equipe(s) vocês já serviram? *
-                                <br /><small>Informe os círculos/equipes que já participou como trabalhador</small>
-                            </label>
-                            <textarea
-                                {...register('equipesJaServiram', { required: 'Campo obrigatório' })}
-                                className={styles.textarea}
-                                rows="3"
-                                placeholder="Ex: Círculo Vermelho, Círculo Verde, Cozinha, Intercessão..."
-                            />
-                            {errors.equipesJaServiram && <span className={styles.error}>{errors.equipesJaServiram.message}</span>}
+                        <h2 className={styles.sectionTitle}>✝️ Caminhada no EJC</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+                            <Input label="Paróquia de Origem e Ano que fez o Encontro" {...register('paroquiaEjcAno', { required: true })} placeholder="Ex: Auxiliadora - 2018" />
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Em quais equipes você já serviu?</label>
+                                <textarea {...register('equipesJaServiram', { required: true })} className={styles.textarea} placeholder="Cite as equipes/círculos..." />
+                            </div>
                         </div>
                     </Card>
 
-                    {/* SEÇÃO 6: Habilidades */}
                     <Card>
-                        <h2 className={styles.sectionTitle}>🎨 Habilidades</h2>
-                        <p className={styles.helpText}>
-                            Marque as habilidades que possui. Isso nos ajuda a organizar as equipes de serviço.
-                            <br /><small style={{ color: 'var(--color-text-tertiary)' }}>(não precisa ser os dois)</small>
-                        </p>
+                        <h2 className={styles.sectionTitle}>🎨 Habilidades e Talentos</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Toca instrumento?</label>
+                                <select {...register('tocaInstrumento')} className={styles.select}>
+                                    <option value="nao">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
+                            {watch('tocaInstrumento') === 'sim' && <Input label="Qual instrumento?" {...register('qualInstrumento')} />}
 
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Vocês sabem tocar algum instrumento musical? (não precisa ser os dois) *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('tocaInstrumento', { required: 'Campo obrigatório' })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('tocaInstrumento', { required: 'Campo obrigatório' })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.tocaInstrumento && <span className={styles.error}>{errors.tocaInstrumento.message}</span>}
-                        </div>
-
-                        {tocaInstrumento === 'sim' && (
-                            <Input
-                                label="Se sim, qual(is) instrumento(s)?"
-                                {...register('qualInstrumento')}
-                                placeholder="Ex: Violão, teclado, bateria..."
-                            />
-                        )}
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Vocês sabem cantar? (não precisa ser os dois) *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('sabeCantar', { required: 'Campo obrigatório' })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('sabeCantar', { required: 'Campo obrigatório' })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.sabeCantar && <span className={styles.error}>Campo obrigatório</span>}
-                        </div>
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Vocês sabem operar equipamentos de som? (não precisa ser os dois) *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('operaEquipamentosSom', { required: 'Campo obrigatório' })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('operaEquipamentosSom', { required: 'Campo obrigatório' })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.operaEquipamentosSom && <span className={styles.error}>Campo obrigatório</span>}
-                        </div>
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Vocês têm habilidades no computador? (não precisa ser os dois) *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('habilidadesComputador', { required: 'Campo obrigatório' })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('habilidadesComputador', { required: 'Campo obrigatório' })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.habilidadesComputador && <span className={styles.error}>Campo obrigatório</span>}
-                        </div>
-
-                        <div className={styles.radioGroup}>
-                            <label className={styles.label}>Vocês têm habilidades com trabalhos manuais? (não precisa ser os dois) *</label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('trabalhosManuais', { required: 'Campo obrigatório' })} value="sim" />
-                                <span>Sim</span>
-                            </label>
-                            <label className={styles.radio}>
-                                <input type="radio" {...register('trabalhosManuais', { required: 'Campo obrigatório' })} value="nao" />
-                                <span>Não</span>
-                            </label>
-                            {errors.trabalhosManuais && <span className={styles.error}>Campo obrigatório</span>}
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Sabe cantar?</label>
+                                <select {...register('sabeCantar')} className={styles.select}>
+                                    <option value="nao">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Habilidades Digitais/PC?</label>
+                                <select {...register('habilidadesComputador')} className={styles.select}>
+                                    <option value="nao">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
                         </div>
                     </Card>
 
-                    {/* Botões de ação */}
                     <div className={styles.actions}>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => navigate('/')}
-                            disabled={loading}
-                        >
+                        <Button type="button" variant="ghost" onClick={() => navigate('/')} disabled={loading}>
                             Cancelar
                         </Button>
-                        <Button
-                            type="submit"
-                            size="lg"
-                            disabled={loading}
-                        >
-                            {loading ? 'Enviando...' : 'Enviar Inscrição'}
+                        <Button type="submit" variant="primary" disabled={loading}>
+                            {loading ? 'Processando...' : 'Enviar Inscrição de Serviço'}
                         </Button>
                     </div>
                 </form>

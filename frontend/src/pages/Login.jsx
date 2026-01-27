@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import api from '../services/api';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -32,52 +33,61 @@ const Login = () => {
 
     return (
         <div className={styles.container}>
-            <Card className={styles.loginCard}>
-                <div className={styles.logoContainer}>
-                    <img src={logoEJC} alt="Logo EJC" className={styles.logo} />
-                </div>
+            <div className={styles.blob}></div>
 
-                <h1 className={styles.title}>Área Administrativa</h1>
-                <p className={styles.subtitle}>Sistema de Inscrições EJC</p>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className={styles.loginCard}
+            >
+                <Card>
+                    <div className={styles.logoContainer}>
+                        <img src={logoEJC} alt="Logo EJC" className={styles.logo} />
+                    </div>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <Input
-                        label="Email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="seu@email.com"
-                    />
+                    <h1 className={styles.title}>Área Administrativa</h1>
+                    <p className={styles.subtitle}>Acesse o painel de comando</p>
 
-                    <Input
-                        label="Senha"
-                        type="password"
-                        required
-                        value={formData.senha}
-                        onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                        placeholder="••••••••"
-                    />
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <Input
+                            label="Email"
+                            type="email"
+                            required
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            placeholder="seu@email.com"
+                        />
 
-                    <Button
-                        type="submit"
-                        fullWidth
-                        size="lg"
-                        disabled={loading}
-                    >
-                        {loading ? 'Entrando...' : 'Entrar'}
-                    </Button>
-                </form>
+                        <Input
+                            label="Senha"
+                            type="password"
+                            required
+                            value={formData.senha}
+                            onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                            placeholder="••••••••"
+                        />
 
-                <div className={styles.backLink}>
-                    <Button
-                        variant="ghost"
-                        onClick={() => navigate('/')}
-                    >
-                        ← Voltar para Home
-                    </Button>
-                </div>
-            </Card>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="primary"
+                            disabled={loading}
+                        >
+                            {loading ? 'Validando...' : 'Entrar no Sistema'}
+                        </Button>
+                    </form>
+
+                    <div className={styles.backLink}>
+                        <Button
+                            variant="ghost"
+                            onClick={() => navigate('/')}
+                        >
+                            ← Voltar para Home
+                        </Button>
+                    </div>
+                </Card>
+            </motion.div>
         </div>
     );
 };

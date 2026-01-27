@@ -31,9 +31,38 @@ const EditarTrabalhador = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [trabalhador, setTrabalhador] = useState(null);
-    const [cor, setCor] = useState('');
-    const [funcao, setFuncao] = useState('');
-    const [apelido, setApelido] = useState('');
+    const [formData, setFormData] = useState({
+        corCracha: '',
+        funcaoTrabalhador: '',
+        apelido: '',
+        apelido2: '',
+        sexo1: '',
+        sexo2: '',
+        dataNascimento1: '',
+        dataNascimento2: '',
+        nomeCompleto1: '',
+        nomeCompleto2: '',
+        contato1: '',
+        contato2: '',
+        instagram1: '',
+        instagram2: '',
+        email: '',
+        enderecoCompleto: '',
+        trabalhamOuEstudam: false,
+        areaTrabalhoEstudo: '',
+        paroquiaEjcAno: '',
+        equipesJaServiram: '',
+        tocaInstrumento: false,
+        qualInstrumento: '',
+        sabeCantar: false,
+        operaEquipamentosSom: false,
+        habilidadesComputador: false,
+        trabalhosManuais: false,
+        cpf1: '',
+        cpf2: '',
+        receberEmail: true,
+        receberWhatsapp: true,
+    });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -41,10 +70,40 @@ const EditarTrabalhador = () => {
         const fetchTrabalhador = async () => {
             try {
                 const response = await api.get(`/inscricoes/${id}?tipo=trabalhador`);
-                setTrabalhador(response.data);
-                setCor(response.data.corCracha || '');
-                setFuncao(response.data.funcaoTrabalhador || '');
-                setApelido(response.data.apelido || response.data.nomeCompleto1?.split(' ')[0] || '');
+                const d = response.data;
+                setTrabalhador(d);
+                setFormData({
+                    corCracha: d.corCracha || '',
+                    funcaoTrabalhador: d.funcaoTrabalhador || '',
+                    apelido: d.apelido || d.nomeCompleto1?.split(' ')[0] || '',
+                    apelido2: d.apelido2 || d.nomeCompleto2?.split(' ')[0] || '',
+                    sexo1: d.sexo1 || '',
+                    sexo2: d.sexo2 || '',
+                    dataNascimento1: d.dataNascimento1 ? new Date(d.dataNascimento1).toISOString().split('T')[0] : '',
+                    dataNascimento2: d.dataNascimento2 ? new Date(d.dataNascimento2).toISOString().split('T')[0] : '',
+                    nomeCompleto1: d.nomeCompleto1 || '',
+                    nomeCompleto2: d.nomeCompleto2 || '',
+                    contato1: d.contato1 || '',
+                    contato2: d.contato2 || '',
+                    instagram1: d.instagram1 || '',
+                    instagram2: d.instagram2 || '',
+                    email: d.email || '',
+                    enderecoCompleto: d.enderecoCompleto || '',
+                    trabalhamOuEstudam: d.trabalhamOuEstudam || false,
+                    areaTrabalhoEstudo: d.areaTrabalhoEstudo || '',
+                    paroquiaEjcAno: d.paroquiaEjcAno || '',
+                    equipesJaServiram: d.equipesJaServiram || '',
+                    tocaInstrumento: d.tocaInstrumento || false,
+                    qualInstrumento: d.qualInstrumento || '',
+                    sabeCantar: d.sabeCantar || false,
+                    operaEquipamentosSom: d.operaEquipamentosSom || false,
+                    habilidadesComputador: d.habilidadesComputador || false,
+                    trabalhosManuais: d.trabalhosManuais || false,
+                    cpf1: d.cpf1 || '',
+                    cpf2: d.cpf2 || '',
+                    receberEmail: d.receberEmail !== undefined ? d.receberEmail : true,
+                    receberWhatsapp: d.receberWhatsapp !== undefined ? d.receberWhatsapp : true,
+                });
             } catch (error) {
                 console.error('Erro ao buscar trabalhador:', error);
                 toast.error('Erro ao carregar dados');
@@ -56,31 +115,53 @@ const EditarTrabalhador = () => {
         fetchTrabalhador();
     }, [id]);
 
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
     const handleSalvar = async () => {
         setSaving(true);
         try {
-            const payload = {
-                corCracha: cor,
-                funcaoTrabalhador: funcao,
-                apelido: apelido
-            };
+            // Limpar datas vazias para evitar erro de Invalid Date no backend
+            const payload = { ...formData };
+            if (!payload.dataNascimento1) delete payload.dataNascimento1;
+            if (!payload.dataNascimento2) delete payload.dataNascimento2;
 
-            await api.put(`/cracha/${id}/atualizar`, payload);
+            await api.put(`/inscricoes/${id}?tipo=TRABALHADOR`, payload);
 
-            // Atualiza o estado local para refletir no preview imediatamente
+            // Atualiza o state local para o preview
             setTrabalhador(prev => ({
                 ...prev,
-                corCracha: cor,
-                funcaoTrabalhador: funcao,
-                apelido: apelido
+                ...formData
             }));
 
-            toast.success('Configurações salvas com sucesso!');
+            toast.success('Alterações salvas com sucesso!');
         } catch (error) {
             console.error('Erro ao salvar:', error);
             toast.error('Erro ao salvar configurações');
         } finally {
             setSaving(false);
+        }
+
+    };
+
+    const alterarStatus = async (novoStatus) => {
+        try {
+            if (novoStatus === 'APROVADA') await api.put(`/inscricoes/${id}/aprovar?tipo=TRABALHADOR`);
+            else if (novoStatus === 'REJEITADA') await api.put(`/inscricoes/${id}/rejeitar?tipo=TRABALHADOR`);
+            else {
+                // Para desfazer (PENDENTE), usamos o update comum já que não tem endpoint específico
+                await api.put(`/inscricoes/${id}?tipo=TRABALHADOR`, { status: 'PENDENTE' });
+            }
+
+            setTrabalhador(prev => ({ ...prev, status: novoStatus }));
+            toast.success(`Status alterado para ${novoStatus}`);
+        } catch (error) {
+            toast.error('Erro ao alterar status');
         }
     };
 
@@ -110,103 +191,233 @@ const EditarTrabalhador = () => {
         return null;
     }
 
+    const isCasal = trabalhador.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL';
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <Button onClick={() => navigate('/admin/inscricoes')} variant="ghost">
                     ← Voltar
                 </Button>
-                <Button onClick={handleImprimirCracha} variant="secondary">
-                    🖨️ Imprimir Crachá
-                </Button>
+                <div className={styles.headerActions}>
+                    <Button onClick={() => navigate(`/admin/inscricoes/${id}`)} variant="ghost">
+                        👁️ Ver Detalhes
+                    </Button>
+                    <Button onClick={handleImprimirCracha} variant="secondary">
+                        🖨️ Imprimir Crachá
+                    </Button>
+                </div>
             </div>
 
             <h1 className={styles.title}>Editar Trabalhador</h1>
 
             <div className={styles.content}>
-                <Card>
-                    <h2 className={styles.sectionTitle}>👤 Informações Básicas</h2>
-                    <p><strong>Nome:</strong> {trabalhador.nomeCompleto1}</p>
-                    <p><strong>Email:</strong> {trabalhador.email}</p>
-                    <p><strong>Contato:</strong> {trabalhador.contato1}</p>
-                    <p><strong>Nome:</strong> {trabalhador.nomeCompleto1}</p>
-                    <p><strong>Email:</strong> {trabalhador.email}</p>
-                    <p><strong>Contato:</strong> {trabalhador.contato1}</p>
-                    <p><strong>Código:</strong> <code>{trabalhador.codigoVerificacao}</code></p>
-                </Card>
-
-                <Card>
-                    <h2 className={styles.sectionTitle}>🎨 Cor e Função</h2>
-
-                    <div className={styles.controls}>
-                        <h3>Configuração do Crachá</h3>
-
-                        <div className={styles.formGroup}>
-                            <label>Apelido (Nome no Crachá)</label>
-                            <input
-                                type="text"
-                                className={styles.input}
-                                value={apelido}
-                                onChange={(e) => setApelido(e.target.value)}
-                                placeholder="Ex: João"
-                            />
+                <div className={styles.leftCol}>
+                    <Card>
+                        <h2 className={styles.sectionTitle}>👤 Pessoa 1</h2>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                                <label style={{ color: 'var(--color-primary-500)', fontWeight: 'bold' }}>Status Atual: {trabalhador.status}</label>
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                    <Button size="sm" onClick={() => alterarStatus('APROVADA')} disabled={trabalhador.status === 'APROVADA'}>✅ Aprovar</Button>
+                                    <Button size="sm" onClick={() => alterarStatus('REJEITADA')} variant="danger" disabled={trabalhador.status === 'REJEITADA'}>❌ Reprovar</Button>
+                                    <Button size="sm" onClick={() => alterarStatus('PENDENTE')} variant="secondary" disabled={trabalhador.status === 'PENDENTE'}>↩️ Desfazer</Button>
+                                </div>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Código Verificação</label>
+                                <input value={trabalhador.codigoVerificacao || ''} disabled className={styles.input} style={{ opacity: 0.7, cursor: 'not-allowed' }} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Nome Completo</label>
+                                <input name="nomeCompleto1" value={formData.nomeCompleto1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Apelido (Nome no Crachá)</label>
+                                <input name="apelido" value={formData.apelido} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Sexo</label>
+                                <select name="sexo1" value={formData.sexo1} onChange={handleChange} className={styles.select}>
+                                    <option value="MASCULINO">Masculino</option>
+                                    <option value="FEMININO">Feminino</option>
+                                </select>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Nascimento</label>
+                                <input type="date" name="dataNascimento1" value={formData.dataNascimento1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Contato</label>
+                                <input name="contato1" value={formData.contato1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Instagram</label>
+                                <input name="instagram1" value={formData.instagram1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>CPF 1</label>
+                                <input name="cpf1" value={formData.cpf1} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
+                            </div>
                         </div>
+                    </Card>
 
+                    {isCasal && (
+                        <Card>
+                            <h2 className={styles.sectionTitle}>👤 Pessoa 2</h2>
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label>Nome Completo</label>
+                                    <input name="nomeCompleto2" value={formData.nomeCompleto2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Apelido (Nome no Crachá)</label>
+                                    <input name="apelido2" value={formData.apelido2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Sexo</label>
+                                    <select name="sexo2" value={formData.sexo2} onChange={handleChange} className={styles.select}>
+                                        <option value="MASCULINO">Masculino</option>
+                                        <option value="FEMININO">Feminino</option>
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Nascimento</label>
+                                    <input type="date" name="dataNascimento2" value={formData.dataNascimento2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Contato</label>
+                                    <input name="contato2" value={formData.contato2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Instagram</label>
+                                    <input name="instagram2" value={formData.instagram2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>CPF 2</label>
+                                    <input name="cpf2" value={formData.cpf2} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    <Card>
+                        <h2 className={styles.sectionTitle}>🏠 Contato e Endereço</h2>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup}>
+                                <label>E-mail</label>
+                                <input type="email" name="email" value={formData.email} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Endereço Completo</label>
+                                <input name="enderecoCompleto" value={formData.enderecoCompleto} onChange={handleChange} className={styles.input} />
+                            </div>
+                        </div>
+                        <div className={styles.checkboxGrid} style={{ border: '0', paddingTop: '0' }}>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="receberEmail" checked={formData.receberEmail} onChange={handleChange} />
+                                Receber E-mail?
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="receberWhatsapp" checked={formData.receberWhatsapp} onChange={handleChange} />
+                                Receber WhatsApp?
+                            </label>
+                        </div>
+                    </Card>
+
+                    <Card>
+                        <h2 className={styles.sectionTitle}>🛠️ Experiência e Habilidades</h2>
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup}>
+                                <label>Paróquia e Ano EJC</label>
+                                <input name="paroquiaEjcAno" value={formData.paroquiaEjcAno} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Equipes que já serviu</label>
+                                <input name="equipesJaServiram" value={formData.equipesJaServiram} onChange={handleChange} className={styles.input} />
+                            </div>
+                        </div>
+                        <div className={styles.checkboxGrid}>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="tocaInstrumento" checked={formData.tocaInstrumento} onChange={handleChange} />
+                                Toca instrumento?
+                            </label>
+                            {formData.tocaInstrumento && (
+                                <input name="qualInstrumento" value={formData.qualInstrumento} onChange={handleChange} placeholder="Qual?" className={styles.input} />
+                            )}
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="sabeCantar" checked={formData.sabeCantar} onChange={handleChange} />
+                                Sabe cantar?
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="operaEquipamentosSom" checked={formData.operaEquipamentosSom} onChange={handleChange} />
+                                Opera som/luz?
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="habilidadesComputador" checked={formData.habilidadesComputador} onChange={handleChange} />
+                                Habilidades Computador?
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="trabalhosManuais" checked={formData.trabalhosManuais} onChange={handleChange} />
+                                Trabalhos manuais?
+                            </label>
+                            <label className={styles.checkboxLabel}>
+                                <input type="checkbox" name="trabalhamOuEstudam" checked={formData.trabalhamOuEstudam} onChange={handleChange} />
+                                Trabalha ou Estuda?
+                            </label>
+                            {formData.trabalhamOuEstudam && (
+                                <input name="areaTrabalhoEstudo" value={formData.areaTrabalhoEstudo} onChange={handleChange} placeholder="Área" className={styles.input} />
+                            )}
+                        </div>
+                    </Card>
+                </div>
+
+                <div className={styles.rightCol}>
+                    <Card>
+                        <h2 className={styles.sectionTitle}>🎨 Configuração Crachá</h2>
                         <div className={styles.formGroup}>
                             <label>Cor do Crachá *</label>
-                            <select
-                                value={cor}
-                                onChange={(e) => setCor(e.target.value)}
-                                className={styles.select}
-                            >
+                            <select name="corCracha" value={formData.corCracha} onChange={handleChange} className={styles.select}>
                                 <option value="">Selecione uma cor</option>
                                 <option value="VERDE">🟢 Verde</option>
                                 <option value="AMARELO">🟡 Amarelo</option>
                                 <option value="VERMELHO">🔴 Vermelho</option>
                             </select>
                         </div>
-
-                        <div className={styles.inputGroup}>
+                        <div className={styles.formGroup}>
                             <label>Função *</label>
-                            <select
-                                value={funcao}
-                                onChange={(e) => setFuncao(e.target.value)}
-                                className={styles.select}
-                            >
+                            <select name="funcaoTrabalhador" value={formData.funcaoTrabalhador} onChange={handleChange} className={styles.select}>
                                 <option value="">Selecione uma função</option>
                                 {FUNCOES.map((f) => (
                                     <option key={f} value={f}>{f}</option>
                                 ))}
                             </select>
                         </div>
-
                         <Button onClick={handleSalvar} disabled={saving} fullWidth>
-                            {saving ? 'Salvando...' : 'Salvar Alterações'}
+                            {saving ? 'Salvando...' : '💾 Salvar Todas Alterações'}
                         </Button>
-                    </div>
-                </Card>
+                    </Card>
 
-                <Card>
-                    <h2 className={styles.sectionTitle}>🎫 Preview do Crachá</h2>
-                    <div className={styles.crachaPreview}>
-                        <div>
-                            <h3>Frente</h3>
+                    <Card>
+                        <h2 className={styles.sectionTitle}>🎫 Preview</h2>
+                        <div className={styles.crachaPreview}>
                             <Cracha
-                                inscricao={{ ...trabalhador, corCracha: cor, funcaoTrabalhador: funcao, apelido: apelido }}
+                                inscricao={{ ...trabalhador, ...formData }}
                                 tipo="trabalhador"
                                 lado="frente"
+                                layout="vertical"
                             />
                         </div>
-                        <div>
-                            <h3>Verso</h3>
+                        <div className={styles.crachaPreview} style={{ marginTop: '20px' }}>
                             <Cracha
-                                inscricao={trabalhador}
+                                inscricao={{ ...trabalhador, ...formData }}
                                 tipo="trabalhador"
                                 lado="verso"
+                                layout="vertical"
                             />
                         </div>
-                    </div>
-                </Card>
+                    </Card>
+                </div>
             </div>
         </div>
     );

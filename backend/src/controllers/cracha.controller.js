@@ -1,11 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const prisma = new PrismaClient();
 
 // Caminho para a logo (ajustar conforme estrutura de pastas)
 // Controller está em: backend/src/controllers
@@ -66,11 +65,24 @@ const desenharCracha = (doc, inscricao, x, y) => {
     }
 
     // Nome (Ajustado para tamanho pequeno)
-    const nome = inscricao.apelido || inscricao.nomeCompleto1 || 'Nome';
+    const nome = (inscricao.apelido || inscricao.nomeCompleto1 || 'Nome').toUpperCase();
+
     // Reduzir tamanho se nome for muito grande
     const nomeSize = nome.length > 20 ? 10 : 12;
-    doc.fontSize(nomeSize).fillColor('#1f2937').font('Helvetica-Bold')
-        .text(nome.toUpperCase(), contentStartX, fY + mmToPt(27), { width: contentWidth, align: 'center' });
+    doc.fontSize(nomeSize).font('Helvetica-Bold');
+
+    const nameTextWidth = doc.widthOfString(nome);
+    const nameBoxWidth = Math.min(nameTextWidth + mmToPt(8), contentWidth - mmToPt(4));
+    const nameBoxHeight = mmToPt(8);
+    const nameBoxX = contentStartX + (contentWidth - nameBoxWidth) / 2;
+    const nameBoxY = fY + mmToPt(25);
+
+    // Box de fundo para o nome (NOVO DESIGN)
+    doc.roundedRect(nameBoxX, nameBoxY, nameBoxWidth, nameBoxHeight, mmToPt(1))
+        .fill(corFaixa);
+
+    doc.fillColor('#ffffff')
+        .text(nome, contentStartX, nameBoxY + mmToPt(2.2), { width: contentWidth, align: 'center' });
 
     // Função com destaque
     if (inscricao.funcaoTrabalhador) {
@@ -83,10 +95,11 @@ const desenharCracha = (doc, inscricao, x, y) => {
         const boxX = contentStartX + (contentWidth - boxWidth) / 2;
         const boxY = fY + mmToPt(38);
 
+        // Box secundário para função (mantendo coerência)
         doc.roundedRect(boxX, boxY, boxWidth, boxHeight, mmToPt(2))
-            .fill(corFaixa);
+            .fillAndStroke('#f3f4f6', corFaixa); // Fundo cinza claro com borda da cor
 
-        doc.fillColor('#ffffff')
+        doc.fillColor('#1f2937')
             .text(funcaoTexto, contentStartX, boxY + mmToPt(1.5), { width: contentWidth, align: 'center' });
     }
 
@@ -252,11 +265,15 @@ export const gerarCrachasEmLote = async (req, res, next) => {
 export const atualizarCorFuncao = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { corCracha, funcaoTrabalhador, apelido } = req.body;
+        const data = req.body;
+
+        // Limpar campos de data se vierem como string vazia ou nula
+        if (data.dataNascimento1) data.dataNascimento1 = new Date(data.dataNascimento1);
+        if (data.dataNascimento2) data.dataNascimento2 = new Date(data.dataNascimento2);
 
         const inscricao = await prisma.inscricaoTrabalhador.update({
             where: { id },
-            data: { corCracha, funcaoTrabalhador, apelido },
+            data: data,
         });
 
         res.json(inscricao);

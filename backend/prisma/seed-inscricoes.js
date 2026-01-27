@@ -67,7 +67,7 @@ async function seedParticipantes() {
 
         await prisma.inscricaoParticipante.create({
             data: {
-                status: randomItem(['PENDENTE', 'APROVADA', 'REJEITADA']),
+                status: 'PENDENTE',
                 corCracha: randomItem([...CORES, null, null]), // 40% sem cor
                 lgpdCiente: true,
 
@@ -136,7 +136,7 @@ async function seedTrabalhadores() {
 
         await prisma.inscricaoTrabalhador.create({
             data: {
-                status: randomItem(['PENDENTE', 'APROVADA', 'REJEITADA']),
+                status: 'PENDENTE',
                 grupoFuncional: Math.random() > 0.3 ? randomItem(CIRCULOS) : null,
                 corCracha: Math.random() > 0.4 ? randomItem(CORES) : null,
                 funcaoTrabalhador: Math.random() > 0.3 ? randomItem(FUNCOES) : null,

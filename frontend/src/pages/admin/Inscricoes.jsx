@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../services/api';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
@@ -9,7 +10,7 @@ import styles from './Inscricoes.module.css';
 const Inscricoes = () => {
     const navigate = useNavigate();
     const [inscricoes, setInscricoes] = useState([]);
-    const [filtros, setFiltros] = useState({ tipo: '', status: '', grupoFuncional: '' });
+    const [filtros, setFiltros] = useState({ tipo: '', status: '', grupoFuncional: '', funcaoTrabalhador: '', corGrupo: '' });
     const [busca, setBusca] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -18,6 +19,7 @@ const Inscricoes = () => {
     }, [filtros]);
 
     const carregarInscricoes = async () => {
+        setLoading(true);
         try {
             const params = { ...filtros, limit: 100 };
             const { data } = await api.get('/inscricoes', { params });
@@ -50,16 +52,6 @@ const Inscricoes = () => {
         }
     };
 
-    const handleRejeitar = async (id, tipo) => {
-        try {
-            await api.patch(`/inscricoes/${id}/rejeitar?tipo=${tipo}`);
-            toast.success('Inscrição rejeitada');
-            carregarInscricoes();
-        } catch (error) {
-            toast.error('Erro ao rejeitar');
-        }
-    };
-
     const downloadExcel = async () => {
         try {
             const response = await api.get('/export/excel', {
@@ -81,150 +73,194 @@ const Inscricoes = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div>
-                    <h1 className={styles.title}>Gerenciar Inscrições</h1>
-                    <p className={styles.subtitle}>{inscricoes.length} inscrições encontradas</p>
+            <div className={styles.blob}></div>
+
+            <motion.div
+                className="fade-in"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+            >
+                <div className={styles.header}>
+                    <div>
+                        <h1 className={styles.title}>Gerenciar Inscrições</h1>
+                        <p className={styles.subtitle}>{inscricoes.length} registros no sistema</p>
+                    </div>
+                    <div className={styles.headerActions}>
+                        <Button onClick={() => navigate('/admin/dashboard')} variant="ghost">
+                            ← Dashboard
+                        </Button>
+                        <Button onClick={downloadExcel} variant="secondary">
+                            📊 Exportar Excel
+                        </Button>
+                    </div>
                 </div>
-                <div className={styles.headerActions}>
-                    <Button onClick={() => navigate('/admin/dashboard')} variant="ghost">
-                        ← Voltar
-                    </Button>
-                    <Button onClick={downloadExcel} variant="secondary">
-                        📊 Exportar Excel
-                    </Button>
-                </div>
-            </div>
 
-            <Card className={styles.filters}>
-                <h3 className={styles.filterTitle}>Filtros</h3>
-                <div className={styles.filterGrid}>
-                    <div>
-                        <label>Tipo</label>
-                        <select
-                            value={filtros.tipo}
-                            onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
-                            className={styles.select}
-                        >
-                            <option value="">Todos</option>
-                            <option value="PARTICIPANTE">Participante</option>
-                            <option value="TRABALHADOR">Trabalhador</option>
-                        </select>
-                    </div>
+                <Card className={styles.filters}>
+                    <h3 className={styles.filterTitle}>Filtros Avançados</h3>
+                    <div className={styles.filterGrid}>
+                        <div className={styles.filterGroup}>
+                            <label>Tipo de Registro</label>
+                            <select
+                                value={filtros.tipo}
+                                onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
+                                className={styles.select}
+                            >
+                                <option value="">Todos</option>
+                                <option value="PARTICIPANTE">Participante</option>
+                                <option value="TRABALHADOR">Trabalhador</option>
+                            </select>
+                        </div>
 
-                    <div>
-                        <label>Status</label>
-                        <select
-                            value={filtros.status}
-                            onChange={(e) => setFiltros({ ...filtros, status: e.target.value })}
-                            className={styles.select}
-                        >
-                            <option value="">Todos</option>
-                            <option value="PENDENTE">Pendente</option>
-                            <option value="APROVADA">Aprovada</option>
-                            <option value="REJEITADA">Rejeitada</option>
-                        </select>
-                    </div>
+                        <div className={styles.filterGroup}>
+                            <label>Status Atual</label>
+                            <select
+                                value={filtros.status}
+                                onChange={(e) => setFiltros({ ...filtros, status: e.target.value })}
+                                className={styles.select}
+                            >
+                                <option value="">Todos</option>
+                                <option value="PENDENTE">Pendente</option>
+                                <option value="APROVADA">Aprovada</option>
+                                <option value="REJEITADA">Rejeitada</option>
+                            </select>
+                        </div>
 
-                    <div>
-                        <label>Grupo Funcional (Círculo)</label>
-                        <select
-                            value={filtros.grupoFuncional}
-                            onChange={(e) => setFiltros({ ...filtros, grupoFuncional: e.target.value })}
-                            className={styles.select}
-                        >
-                            <option value="">Todos</option>
-                            <option value="VERMELHO">Círculo Vermelho</option>
-                            <option value="VERDE">Círculo Verde</option>
-                            <option value="AMARELO">Círculo Amarelo</option>
-                        </select>
-                    </div>
+                        {filtros.tipo === 'TRABALHADOR' && (
+                            <div className={styles.filterGroup}>
+                                <label>Equipe / Função</label>
+                                <select
+                                    value={filtros.funcaoTrabalhador}
+                                    onChange={(e) => setFiltros({ ...filtros, funcaoTrabalhador: e.target.value })}
+                                    className={styles.select}
+                                >
+                                    <option value="">Todas</option>
+                                    <option value="Cozinha">Cozinha</option>
+                                    <option value="Liturgia & Vigília">Liturgia</option>
+                                    <option value="Secretaria">Secretaria</option>
+                                    <option value="Som & Iluminação">Som</option>
+                                    <option value="Trânsito & Recepção">Trânsito</option>
+                                    <option value="Ordem">Ordem</option>
+                                    {/* Adicione outras se necessário, ou busque do array de constantes */}
+                                </select>
+                            </div>
+                        )}
 
-                    <div>
-                        <label>Busca de Nome/Amigos</label>
-                        <div className={styles.searchBox}>
+                        {filtros.tipo === 'PARTICIPANTE' && (
+                            <div className={styles.filterGroup}>
+                                <label>Cor do Grupo</label>
+                                <select
+                                    value={filtros.corGrupo}
+                                    onChange={(e) => setFiltros({ ...filtros, corGrupo: e.target.value })}
+                                    className={styles.select}
+                                >
+                                    <option value="">Todas</option>
+                                    <option value="VERMELHO">Vermelho</option>
+                                    <option value="VERDE">Verde</option>
+                                    <option value="AMARELO">Amarelo</option>
+                                    <option value="AZUL">Azul</option>
+                                    <option value="LARANJA">Laranja</option>
+                                </select>
+                            </div>
+                        )}
+
+                        <div className={styles.filterGroup}>
+                            <label>Círculo / Grupo</label>
+                            <select
+                                value={filtros.grupoFuncional}
+                                onChange={(e) => setFiltros({ ...filtros, grupoFuncional: e.target.value })}
+                                className={styles.select}
+                            >
+                                <option value="">Todos os Grupos</option>
+                                <option value="VERMELHO">Vermelho</option>
+                                <option value="VERDE">Verde</option>
+                                <option value="AMARELO">Amarelo</option>
+                            </select>
+                        </div>
+
+                        <div className={styles.filterGroup}>
+                            <label>Pesquisar</label>
                             <input
                                 type="text"
                                 value={busca}
                                 onChange={(e) => setBusca(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleBusca()}
-                                placeholder="Digite e pressione Enter"
+                                placeholder="Nome ou CPF..."
                                 className={styles.input}
                             />
                         </div>
                     </div>
-                </div>
-            </Card>
+                </Card>
 
-            <div className={styles.list}>
-                {loading ? (
-                    <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>Carregando...</p>
-                ) : inscricoes.length === 0 ? (
-                    <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>Nenhuma inscrição encontrada</p>
-                ) : (
-                    inscricoes.map((inscricao) => (
-                        <Card key={inscricao.id} className={styles.inscricaoCard}>
-                            <div className={styles.inscricaoHeader}>
-                                <div>
-                                    <h3>{inscricao.nomeCompleto}</h3>
-                                    <p>{inscricao.apelido} • {inscricao.telefone}</p>
-                                </div>
-                                <div className={styles.badges}>
-                                    <span className={`${styles.badge} ${styles[inscricao.tipo]}`}>
-                                        {inscricao.tipo}
-                                    </span>
-                                    <span className={`${styles.badge} ${styles[inscricao.status]}`}>
-                                        {inscricao.status}
-                                    </span>
-                                    {inscricao.grupoFuncional && ['VERDE', 'AMARELO', 'VERMELHO'].includes(inscricao.grupoFuncional) && (
-                                        <span className={`${styles.badge} ${styles[inscricao.grupoFuncional]}`}>
-                                            {inscricao.grupoFuncional}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={styles.inscricaoActions}>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => navigate(`/admin/inscricoes/${inscricao.id}`)}
-                                >
-                                    Ver Detalhes
-                                </Button>
-
-                                {inscricao.tipo === 'TRABALHADOR' && (
-                                    <Button
-                                        size="sm"
-                                        variant="secondary"
-                                        onClick={() => navigate(`/admin/trabalhadores/editar/${inscricao.id}`)}
+                <div className={styles.list}>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>Carregando dados...</div>
+                    ) : inscricoes.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '3rem', opacity: 0.5 }}>Nenhum registro encontrado.</div>
+                    ) : (
+                        <div className={styles.list}>
+                            <AnimatePresence mode="popLayout">
+                                {inscricoes.map((inscricao, index) => (
+                                    <motion.div
+                                        key={inscricao.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.98 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.98 }}
+                                        transition={{ duration: 0.2 }}
                                     >
-                                        ✏️ Editar
-                                    </Button>
-                                )}
+                                        <Card className={styles.inscricaoCard}>
+                                            <div className={styles.inscricaoInfo}>
+                                                <div className={styles.badges}>
+                                                    <span className={`${styles.badge} ${styles[inscricao.tipo]}`}>
+                                                        {inscricao.tipo}
+                                                    </span>
+                                                    <span className={`${styles.badge} ${styles[inscricao.status]}`}>
+                                                        {inscricao.status}
+                                                    </span>
+                                                    {(inscricao.corGrupo || inscricao.grupoFuncional) && (
+                                                        <span className={styles.badge} style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)', border: '1px solid var(--color-primary-200)' }}>
+                                                            {inscricao.corGrupo || inscricao.grupoFuncional}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <h3>{inscricao.nomeCompleto}</h3>
+                                                <p>{inscricao.apelido || 'Sem apelido'} • {inscricao.telefone || 'Sem contato'}</p>
+                                            </div>
 
-                                {inscricao.status === 'PENDENTE' && (
-                                    <>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleAprovar(inscricao.id, inscricao.tipo)}
-                                        >
-                                            ✅ Aprovar
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handleRejeitar(inscricao.id, inscricao.tipo)}
-                                        >
-                                            ❌ Rejeitar
-                                        </Button>
-                                    </>
-                                )}
-                            </div>
-                        </Card>
-                    ))
-                )}
-            </div>
+                                            <div className={styles.inscricaoActions}>
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={() => navigate(`/admin/inscricoes/${inscricao.id}`)}
+                                                >
+                                                    Detalhes
+                                                </Button>
+
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    onClick={() => navigate(inscricao.tipo === 'TRABALHADOR' ? `/admin/trabalhadores/editar/${inscricao.id}` : `/admin/inscricoes/editar/${inscricao.id}`)}
+                                                >
+                                                    Editar
+                                                </Button>
+
+                                                {inscricao.status === 'PENDENTE' && (
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => handleAprovar(inscricao.id, inscricao.tipo)}
+                                                    >
+                                                        Aprovar
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
         </div>
     );
 };

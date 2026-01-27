@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import api from '../../services/api';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
@@ -36,7 +37,7 @@ const InscricaoDetalhes = () => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `ficha_${inscricao.nomeCompleto}.pdf`);
+            link.setAttribute('download', `ficha_${inscricao.nomeCompleto || 'inscricao'}.pdf`);
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -47,99 +48,153 @@ const InscricaoDetalhes = () => {
     };
 
     if (loading) {
-        return <div className={styles.loading}>Carregando...</div>;
+        return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando ficha...</div>;
     }
 
-    if (!inscricao) {
-        return null;
-    }
+    if (!inscricao) return null;
+
+    const isTrabalhador = !inscricao.nomeCompleto && (inscricao.nomeCompleto1 || inscricao.nomeCompleto2);
+    const displayNome = isTrabalhador
+        ? (inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? `${inscricao.nomeCompleto1} & ${inscricao.nomeCompleto2}` : inscricao.nomeCompleto1 || 'Sem Nome')
+        : inscricao.nomeCompleto;
+
+    const renderField = (label, value) => {
+        if (value === null || value === undefined || value === '') return null;
+        let displayValue = value;
+        if (typeof value === 'boolean') displayValue = value ? 'Sim' : 'Não';
+        if (typeof value === 'string' && value.includes('T') && !isNaN(Date.parse(value))) {
+            displayValue = new Date(value).toLocaleDateString('pt-BR');
+        }
+
+        return (
+            <div className={styles.field} key={label}>
+                <label>{label}</label>
+                <p>{displayValue}</p>
+            </div>
+        );
+    };
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <Button onClick={() => navigate('/admin/inscricoes')} variant="ghost">
-                    ← Voltar
-                </Button>
-                <Button onClick={downloadFicha} variant="secondary">
-                    📄 Baixar Ficha PDF
-                </Button>
-            </div>
+            <div className={styles.blob}></div>
 
-            <Card>
-                <h1 className={styles.title}>{inscricao.nomeCompleto}</h1>
-                <div className={styles.badges}>
-                    <span className={`${styles.badge} ${styles[inscricao.tipo]}`}>
-                        {inscricao.tipo}
-                    </span>
-                    <span className={`${styles.badge} ${styles[inscricao.status]}`}>
-                        {inscricao.status}
-                    </span>
-                    {inscricao.grupoFuncional && (
-                        <span className={`${styles.badge} ${styles[inscricao.grupoFuncional]}`}>
-                            {inscricao.grupoFuncional}
+            <motion.div
+                className="fade-in"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                <div className={styles.header}>
+                    <Button onClick={() => navigate('/admin/inscricoes')} variant="ghost">
+                        ← Listagem
+                    </Button>
+                    <div className={styles.headerActions}>
+                        <Button onClick={() => navigate(isTrabalhador ? `/admin/trabalhadores/editar/${inscricao.id}` : `/admin/inscricoes/editar/${inscricao.id}`)} variant="secondary">
+                            Editar Registro
+                        </Button>
+                        <Button onClick={downloadFicha} variant="primary">
+                            Exportar PDF
+                        </Button>
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <h1 className={styles.title}>{displayNome}</h1>
+                    <div className={styles.badges}>
+                        <span className={`${styles.badge} ${styles[inscricao.tipo || (isTrabalhador ? 'TRABALHADOR' : 'PARTICIPANTE')]}`}>
+                            {inscricao.tipo || (isTrabalhador ? 'TRABALHADOR' : 'PARTICIPANTE')}
                         </span>
-                    )}
+                        <span className={`${styles.badge} ${styles[inscricao.status]}`}>
+                            {inscricao.status}
+                        </span>
+                        {inscricao.grupoFuncional && (
+                            <span className={`${styles.badge} ${styles[inscricao.grupoFuncional]}`}>
+                                {inscricao.grupoFuncional}
+                            </span>
+                        )}
+                    </div>
                 </div>
-            </Card>
 
-            <Card>
-                <h2 className={styles.sectionTitle}>👤 Dados Pessoais</h2>
-                <div className={styles.grid}>
-                    <div className={styles.field}>
-                        <label>Nome Completo</label>
-                        <p>{inscricao.nomeCompleto}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Apelido</label>
-                        <p>{inscricao.apelido}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Data de Nascimento</label>
-                        <p>{new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Sexo</label>
-                        <p>{inscricao.sexo}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Telefone</label>
-                        <p>{inscricao.telefone}</p>
-                    </div>
-                    {inscricao.instagram && (
-                        <div className={styles.field}>
-                            <label>Instagram</label>
-                            <p>{inscricao.instagram}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <Card>
+                        <h2 className={styles.sectionTitle}>👤 Informações Pessoais {isTrabalhador ? '(Pessoa 1)' : ''}</h2>
+                        <div className={styles.grid}>
+                            {renderField('Nome Completo', isTrabalhador ? inscricao.nomeCompleto1 : inscricao.nomeCompleto)}
+                            {renderField('Apelido', inscricao.apelido)}
+                            {renderField('Data Nascimento', isTrabalhador ? inscricao.dataNascimento1 : inscricao.dataNascimento)}
+                            {renderField('Sexo', isTrabalhador ? inscricao.sexo1 : inscricao.sexo)}
+                            {renderField('CPF', isTrabalhador ? inscricao.cpf1 : inscricao.cpf)}
+                            {renderField('WhatsApp', isTrabalhador ? inscricao.contato1 : inscricao.telefone)}
+                            {renderField('Email', inscricao.email)}
                         </div>
+                    </Card>
+
+                    {isTrabalhador && inscricao.nomeCompleto2 && (
+                        <Card>
+                            <h2 className={styles.sectionTitle}>👤 Informações Pessoais (Pessoa 2)</h2>
+                            <div className={styles.grid}>
+                                {renderField('Nome Completo', inscricao.nomeCompleto2)}
+                                {renderField('Apelido', inscricao.apelido2)}
+                                {renderField('Data Nascimento', inscricao.dataNascimento2)}
+                                {renderField('Sexo', inscricao.sexo2)}
+                                {renderField('CPF', inscricao.cpf2)}
+                                {renderField('WhatsApp', inscricao.contato2)}
+                            </div>
+                        </Card>
                     )}
+
+                    {!isTrabalhador && (
+                        <>
+                            <Card>
+                                <h2 className={styles.sectionTitle}>👨‍👩‍👦 Núcleo Familiar</h2>
+                                <div className={styles.grid}>
+                                    {renderField('Estado Civil', inscricao.estadoCivil)}
+                                    {renderField('Mora com', inscricao.moraComQuem)}
+                                    {renderField('Situação Pais', inscricao.estadoCivilPais)}
+                                    {renderField('Nome da Mãe', inscricao.nomeMae)}
+                                    {renderField('Telefone Mãe', inscricao.telefoneMae)}
+                                    {renderField('Nome do Pai', inscricao.nomePai)}
+                                    {renderField('Telefone Pai', inscricao.telefonePai)}
+                                </div>
+                            </Card>
+
+                            <Card>
+                                <h2 className={styles.sectionTitle}>🏥 Saúde e Alergias</h2>
+                                <div className={styles.grid}>
+                                    {renderField('Restrições Alimentares', inscricao.restricoesAlimentares)}
+                                    {renderField('Alergias', inscricao.alergias)}
+                                    {renderField('Problemas de Saúde', inscricao.problemasSaude)}
+                                    {renderField('Medicamentos', inscricao.medicamentosContinuos)}
+                                </div>
+                            </Card>
+                        </>
+                    )}
+
+                    <Card>
+                        <h2 className={styles.sectionTitle}>🏠 Localização</h2>
+                        <div className={styles.grid}>
+                            {renderField('Endereço', inscricao.enderecoCompleto)}
+                            {renderField('Bairro', inscricao.bairro)}
+                        </div>
+                    </Card>
+
+                    <div className={styles.mediaSection}>
+                        {inscricao.fotoUrl && (
+                            <Card>
+                                <h2 className={styles.sectionTitle}>📷 Identificação Visual</h2>
+                                <img src={inscricao.fotoUrl} alt="Foto" className={styles.foto} />
+                            </Card>
+                        )}
+                        {inscricao.comprovanteUrl && (
+                            <Card>
+                                <h2 className={styles.sectionTitle}>📄 Financeiro</h2>
+                                <a href={inscricao.comprovanteUrl} target="_blank" rel="noreferrer" className={styles.linkComprovante}>
+                                    📎 Abrir Comprovante de Pagamento
+                                </a>
+                            </Card>
+                        )}
+                    </div>
                 </div>
-            </Card>
-
-            <Card>
-                <h2 className={styles.sectionTitle}>🏠 Endereço</h2>
-                <div className={styles.grid}>
-                    <div className={styles.field}>
-                        <label>Endereço Completo</label>
-                        <p>{inscricao.enderecoCompleto}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Bairro</label>
-                        <p>{inscricao.bairro}</p>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Mora com</label>
-                        <p>{inscricao.moraComQuem}</p>
-                    </div>
-                </div>
-            </Card>
-
-            {inscricao.fotoUrl && (
-                <Card>
-                    <h2 className={styles.sectionTitle}>📷 Foto 3x4</h2>
-                    <img src={inscricao.fotoUrl} alt="Foto" className={styles.foto} />
-                </Card>
-            )}
-
-            {/* Adicionar mais seções conforme necessário */}
+            </motion.div>
         </div>
     );
 };

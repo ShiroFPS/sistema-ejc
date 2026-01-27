@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { config } from './config/index.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
@@ -15,6 +17,34 @@ import crachaRoutes from './routes/cracha.routes.js';
 
 const app = express();
 
+// Security Headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
+            imgSrc: ["'self'", "data:", "https:"],
+        },
+    },
+}));
+
+// Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // 100 requests por IP
+    message: 'Muitas requisições, tente novamente mais tarde',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5, // 5 tentativas de login
+    message: 'Muitas tentativas de login, tente novamente mais tarde',
+    skipSuccessfulRequests: true,
+});
+
 // Middlewares
 app.use(cors({
     origin: config.frontendUrl,
@@ -27,12 +57,16 @@ app.use(fileUpload({
     abortOnLimit: true,
 }));
 
+// Aplicar rate limiting geral
+app.use('/api/', limiter);
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 // Rotas da API
+app.use('/api/auth/login', loginLimiter); // Rate limit específico para login
 app.use('/api/auth', authRoutes);
 app.use('/api/inscricoes', inscricoesRoutes);
 app.use('/api/config', configRoutes);
@@ -54,6 +88,8 @@ const PORT = config.port;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`📡 Frontend permitido: ${config.frontendUrl}`);
+    console.log(`🛡️  Rate limiting ativado`);
+    console.log(`🔒 Security headers ativados`);
 });
 
 export default app;

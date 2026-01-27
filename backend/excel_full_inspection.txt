@@ -1,0 +1,44 @@
+=== EXCEL INSPECTION ===
+
+Sheets found: Respostas ao formulário 1
+
+--- Sheet: Respostas ao formulário 1 ---
+Total Columns (with data): 34
+Col [1]: Carimbo de data/hora
+Col [2]: Endereço de e-mail
+Col [3]: Você é:
+Col [4]: Nome Completo
+Col [5]: Contato (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+Col [6]: Instagram
+Col [7]: Em qual cidade você reside?
+Col [8]: Trabalha ou estuda?
+Col [9]: Se sim, em qual área?
+Col [10]: Paróquia em que fez o EJC e o ano:
+Col [11]: Em quais equipes já serviu?
+Col [12]: Sabe tocar algum instrumento?
+Col [13]: Se sim, qual(is) instrumento(s)?
+Col [14]: Você sabe cantar?
+Col [15]: Você sabe operar instrumentos de som?
+Col [16]: Você tem habilidades no computador?
+Col [17]: Você tem habilidade com trabalhos manuais?
+Col [18]: Nome Completo 1
+Col [19]: Contato 1 (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+Col [20]: Instagram 1
+Col [21]: Nome Completo 2
+Col [22]: Contato 2 (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+Col [23]: Instagram 2
+Col [24]: Endereço Completo
+Col [25]: Trabalham ou estudam?
+Col [26]: Se sim, em qual área? 
+Col [27]: Paroquia em que fez EJC (ou ECC) e o ano 
+Col [28]: Em qual(is) equipe(s) vocês já serviram?
+Col [29]: Vocês sabem tocar algum instrumento musical? (não precisa ser os dois)
+Col [30]: Se sim, qual(is) instrumento(s)? 2
+Col [31]: Vocês sabem cantar? (não precisa ser os dois)
+Col [32]: Vocês sabem operar equipamentos de som? (não precisa ser os dois)
+Col [33]: Vocês têm habilidades no computador? (não precisa ser os dois)
+Col [34]: Vocês têm habilidades com trabalhos manuais? (não precisa ser os dois)
+

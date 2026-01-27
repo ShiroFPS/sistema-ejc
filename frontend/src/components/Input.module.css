@@ -22,15 +22,15 @@
 .textarea,
 .select {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
+    padding: 0.875rem 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-xl);
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
     font-family: var(--font-family);
-    transition: all var(--transition-base);
+    transition: all 0.2s ease;
 }
 
 .input:focus,
@@ -38,7 +38,8 @@
 .select:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
 }
 
 .input::placeholder,

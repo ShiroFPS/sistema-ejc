@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/prisma.js';
 
 // Obter configurações
 export const obter = async (req, res, next) => {
@@ -34,11 +32,11 @@ export const atualizar = async (req, res, next) => {
         const config = await prisma.configuracao.update({
             where: { id: 1 },
             data: {
-                limiteParticipantes: data.limiteParticipantes,
-                limiteTrabalhadores: data.limiteTrabalhadores,
-                dataLimiteInscricoes: data.dataLimiteInscricoes ? new Date(data.dataLimiteInscricoes) : null,
-                coresPersonalizadas: data.coresPersonalizadas ? JSON.stringify(data.coresPersonalizadas) : undefined,
-                emailsNotificacao: data.emailsNotificacao ? JSON.stringify(data.emailsNotificacao) : undefined,
+                limiteParticipantes: Number(data.limiteParticipantes),
+                limiteTrabalhadores: Number(data.limiteTrabalhadores),
+                dataLimiteInscricoes: data.dataLimiteInscricoes ? new Date(data.dataLimiteInscricoes).toISOString() : null,
+                coresPersonalizadas: data.coresPersonalizadas ? (typeof data.coresPersonalizadas === 'string' ? data.coresPersonalizadas : JSON.stringify(data.coresPersonalizadas)) : undefined,
+                emailsNotificacao: data.emailsNotificacao ? (typeof data.emailsNotificacao === 'string' ? data.emailsNotificacao : JSON.stringify(data.emailsNotificacao)) : undefined,
             },
         });
 
