@@ -1,0 +1,38 @@
+.footer {
+    width: 100%;
+    padding: 1rem 0;
+    text-align: center;
+    background: transparent;
+    margin-top: auto;
+}
+
+.text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.link {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.link:hover {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .footer {
+        padding: 0.75rem 0;
+    }
+
+    .text {
+        font-size: 0.7rem;
+    }
+}

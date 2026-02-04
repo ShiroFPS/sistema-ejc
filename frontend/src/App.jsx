@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingFallback from './components/LoadingFallback';
+import Footer from './components/Footer';
 import './styles/globals.css';
 
 // Lazy load para otimização
@@ -126,6 +127,7 @@ function App() {
                         },
                     }}
                 />
+                <Footer />
             </BrowserRouter>
         </ErrorBoundary>
     );
