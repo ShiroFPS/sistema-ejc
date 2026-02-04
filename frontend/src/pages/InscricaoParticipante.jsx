@@ -158,7 +158,7 @@ const InscricaoParticipante = () => {
                     </Card>
 
                     <Card>
-                        <h2 className={styles.sectionTitle}>🆘 Emergência</h2>
+                        <h2 className={styles.sectionTitle}>📞 Contatos Extras</h2>
                         <p className={styles.helpText}>Forneça contatos de amigos/parentes que NÃO estão no EJC:</p>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             {[1, 2, 3].map(i => (
