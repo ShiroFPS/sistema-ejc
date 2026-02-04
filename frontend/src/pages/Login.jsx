@@ -19,13 +19,24 @@ const Login = () => {
         setLoading(true);
 
         try {
+            console.log('Tentando login com:', formData.email);
+            console.log('API URL:', import.meta.env.VITE_API_URL);
+
             const { data } = await api.post('/auth/login', formData);
+            console.log('Login bem sucedido:', data);
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             toast.success(`Bem-vindo, ${data.user.nome}!`);
             navigate('/admin/dashboard');
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Erro ao fazer login');
+            console.error('Erro detalhado login:', error);
+            console.error('Erro response:', error.response);
+            console.error('Erro request:', error.request);
+            console.error('Erro config:', error.config);
+
+            const errorMessage = error.response?.data?.error || 'Erro ao fazer login';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
