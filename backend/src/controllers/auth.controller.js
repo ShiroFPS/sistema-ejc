@@ -17,14 +17,16 @@ export const login = async (req, res, next) => {
         });
 
         if (!user) {
-            return res.status(401).json({ error: 'Credenciais inválidas' });
+            console.log('❌ Login failed: User not found:', email);
+            return res.status(401).json({ error: 'Usuário não encontrado' });
         }
 
         // Verificar senha
         const senhaValida = await bcrypt.compare(senha, user.senha);
 
         if (!senhaValida) {
-            return res.status(401).json({ error: 'Credenciais inválidas' });
+            console.log('❌ Login failed: Invalid password for:', email);
+            return res.status(401).json({ error: 'Senha incorreta' });
         }
 
         // Gerar token
