@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import logoEJC from '../assets/logo-ejc.jpg';
@@ -7,6 +8,29 @@ import styles from './Home.module.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const [config, setConfig] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        api.get('/config')
+            .then(({ data }) => {
+                setConfig(data);
+                // Se ambas as vagas estiverem zeradas, redirecionar globalmente
+                const vagasPart = data.limiteParticipantes - (data.totalParticipantes || 0);
+                const vagasTrab = data.limiteTrabalhadores - (data.totalTrabalhadores || 0);
+
+                if (vagasPart <= 0 && vagasTrab <= 0) {
+                    navigate('/vagas-esgotadas');
+                }
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [navigate]);
+
+    if (loading) return null; // ou um spinner
+
+    const vagasParticipante = config ? config.limiteParticipantes - (config.totalParticipantes || 0) : 0;
+    const vagasTrabalhador = config ? config.limiteTrabalhadores - (config.totalTrabalhadores || 0) : 0;
 
     return (
         <div className={styles.container}>
@@ -37,13 +61,19 @@ const Home = () => {
                         <p className={styles.cardDescription}>
                             Para jovens que desejam vivenciar o encontro pela primeira vez.
                         </p>
-                        <Button
-                            fullWidth
-                            variant="primary"
-                            onClick={() => navigate('/inscricao/participante')}
-                        >
-                            Fazer Inscrição
-                        </Button>
+                        {vagasParticipante > 0 ? (
+                            <Button
+                                fullWidth
+                                variant="primary"
+                                onClick={() => navigate('/inscricao/participante')}
+                            >
+                                Fazer Inscrição
+                            </Button>
+                        ) : (
+                            <Button fullWidth variant="danger" disabled>
+                                Vagas Esgotadas
+                            </Button>
+                        )}
                     </Card>
 
                     <Card className={styles.optionCard}>
@@ -52,13 +82,19 @@ const Home = () => {
                         <p className={styles.cardDescription}>
                             Para quem já fez o EJC e deseja servir nas diversas equipes.
                         </p>
-                        <Button
-                            fullWidth
-                            variant="primary"
-                            onClick={() => navigate('/inscricao/trabalhador')}
-                        >
-                            Fazer Inscrição
-                        </Button>
+                        {vagasTrabalhador > 0 ? (
+                            <Button
+                                fullWidth
+                                variant="primary"
+                                onClick={() => navigate('/inscricao/trabalhador')}
+                            >
+                                Fazer Inscrição
+                            </Button>
+                        ) : (
+                            <Button fullWidth variant="danger" disabled>
+                                Vagas Esgotadas
+                            </Button>
+                        )}
                     </Card>
                 </div>
 

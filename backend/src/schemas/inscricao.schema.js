@@ -68,7 +68,11 @@ export const trabalhadorSchema = z.object({
     sabeCantar: z.boolean().default(false),
     operaEquipamentosSom: z.boolean().default(false),
     habilidadesComputador: z.boolean().default(false),
-    trabalhosManuais: z.boolean().default(false),
+    trabalhamosManuais: z.boolean().default(false),
     apelido: z.string().optional().nullable(),
     apelido2: z.string().optional().nullable(),
+    // Novos campos
+    profissao1: z.string().optional().nullable(),
+    profissao2: z.string().optional().nullable(),
+    habilidadesTalentos: z.string().optional().nullable(),
 });

@@ -1,0 +1,63 @@
+--- EXCEL HEADERS ---
+[0] Carimbo de data/hora
+[1] Endereço de e-mail
+[2] Você é:
+[3] Nome Completo
+[4] Contato (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+[5] Instagram
+[6] Em qual cidade você reside?
+[7] Trabalha ou estuda?
+[8] Se sim, em qual área?
+[9] Paróquia em que fez o EJC e o ano:
+[10] Em quais equipes já serviu?
+[11] Sabe tocar algum instrumento?
+[12] Se sim, qual(is) instrumento(s)?
+[13] Você sabe cantar?
+[14] Você sabe operar instrumentos de som?
+[15] Você tem habilidades no computador?
+[16] Você tem habilidade com trabalhos manuais?
+[17] Nome Completo 1
+[18] Contato 1 (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+[19] Instagram 1
+[20] Nome Completo 2
+[21] Contato 2 (Whatsapp)
+Exemplo: (DDD) 9 XXXX-XXXX
+[22] Instagram 2
+[23] Endereço Completo
+[24] Trabalham ou estudam?
+[25] Se sim, em qual área? 
+[26] Paroquia em que fez EJC (ou ECC) e o ano 
+[27] Em qual(is) equipe(s) vocês já serviram?
+[28] Vocês sabem tocar algum instrumento musical? (não precisa ser os dois)
+[29] Se sim, qual(is) instrumento(s)? 2
+[30] Vocês sabem cantar? (não precisa ser os dois)
+[31] Vocês sabem operar equipamentos de som? (não precisa ser os dois)
+[32] Vocês têm habilidades no computador? (não precisa ser os dois)
+[33] Vocês têm habilidades com trabalhos manuais? (não precisa ser os dois)
+TOTAL: 34
+
+--- SAMPLE DATA (Row 2) ---
+[1] Mon Jan 12 2026 07:47:51 GMT-0300 (Horário Padrão de Brasília)
+[2] mateusmlsk@gmail.com
+[3] Solteiro
+[4] Mateus Morais Lopes
+[5] 83999000201
+[6] mateusmlo_
+[7] João Pessoa
+[8] Sim
+[9] Engenheiria Elétrica
+[10] Maria Mãe de Deus - 2019
+[11] Minibox
+Bandinha
+Vigilia
+Ordem
+Som e iluminação 
+Círculos
+[12] Sim
+[13] Violao
+[14] Sim
+[15] Sim
+[16] Sim
+[17] Não

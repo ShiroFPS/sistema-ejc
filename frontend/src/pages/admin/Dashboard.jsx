@@ -129,6 +129,11 @@ const Dashboard = () => {
                         <p>Distribuição de encontreiros por função e grupo funcional.</p>
                     </Card>
 
+                    <Card className={styles.actionCard} onClick={() => navigate('/admin/importar')}>
+                        <h3>📥 Importar Excel</h3>
+                        <p>Carregar planilha de inscritos (Google Forms).</p>
+                    </Card>
+
                     <Card className={styles.actionCard} onClick={() => navigate('/')}>
                         <h3>🏠 Portal Público</h3>
                         <p>Visualizar a página inicial de inscrições.</p>

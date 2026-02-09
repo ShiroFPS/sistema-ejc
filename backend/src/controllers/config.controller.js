@@ -11,11 +11,23 @@ export const obter = async (req, res, next) => {
             return res.status(404).json({ error: 'Configuração não encontrada' });
         }
 
-        // Parsear JSONs
+        // Contar inscritos ativos (PENDENTE + APROVADA)
+        const [totalParticipantes, totalTrabalhadoresRes] = await Promise.all([
+            prisma.inscricaoParticipante.count({
+                where: { status: { not: 'REJEITADA' } }
+            }),
+            prisma.inscricaoTrabalhador.count({
+                where: { status: { not: 'REJEITADA' } }
+            })
+        ]);
+
+        // Parsear JSONs e adicionar totais
         const configFormatada = {
             ...config,
             coresPersonalizadas: JSON.parse(config.coresPersonalizadas || '{}'),
             emailsNotificacao: JSON.parse(config.emailsNotificacao || '[]'),
+            totalParticipantes,
+            totalTrabalhadores: totalTrabalhadoresRes,
         };
 
         res.json(configFormatada);

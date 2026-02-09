@@ -12,6 +12,7 @@ import inscricoesRoutes from './routes/inscricoes.routes.js';
 import configRoutes from './routes/config.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import exportRoutes from './routes/export.routes.js';
+import importRoutes from './routes/import.routes.js';
 import trabalhadoresRoutes from './routes/trabalhadores.routes.js';
 import crachaRoutes from './routes/cracha.routes.js';
 
@@ -91,6 +92,7 @@ app.use('/api/inscricoes', inscricoesRoutes);
 app.use('/api/config', configRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/imports', importRoutes); // Nova rota de importação
 app.use('/api/inscricoes/trabalhadores', trabalhadoresRoutes);
 app.use('/api/cracha', crachaRoutes);
 

@@ -19,7 +19,8 @@ const Configuracoes = React.lazy(() => import('./pages/admin/Configuracoes'));
 const EditarTrabalhador = React.lazy(() => import('./pages/admin/EditarTrabalhador'));
 const EditarParticipante = React.lazy(() => import('./pages/admin/EditarParticipante'));
 const TrabalhadorPorFuncao = React.lazy(() => import('./pages/admin/TrabalhadorPorFuncao'));
-
+const VagasEsgotadas = React.lazy(() => import('./pages/VagasEsgotadas'));
+const Importar = React.lazy(() => import('./pages/admin/Importar'));
 // Componente de proteção de rota melhorado
 const ProtectedRoute = ({ children }) => {
     const [isValid, setIsValid] = React.useState(null);
@@ -107,6 +108,14 @@ function App() {
                         <Route path="/admin/trabalhadores/funcoes" element={
                             <ProtectedRoute>
                                 <TrabalhadorPorFuncao />
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/vagas-esgotadas" element={<VagasEsgotadas />} />
+
+                        <Route path="/admin/importar" element={
+                            <ProtectedRoute>
+                                <Importar />
                             </ProtectedRoute>
                         } />
 

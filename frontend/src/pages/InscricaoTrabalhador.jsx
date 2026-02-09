@@ -134,6 +134,7 @@ const InscricaoTrabalhador = () => {
                                         <Input label="Data Nascimento (Pessoa 1)" type="date" {...register('dataNascimento1', { required: true })} />
                                         <Input label="Instagram (Pessoa 1)" {...register('instagram1')} />
                                         <Input label="Apelido para o Crachá 1" {...register('apelido', { required: true })} />
+                                        <Input label="Profissão (Pessoa 1)" {...register('profissao1', { required: true })} />
                                     </div>
 
                                     {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' && (
@@ -152,6 +153,7 @@ const InscricaoTrabalhador = () => {
                                             <Input label="Data Nascimento (Pessoa 2)" type="date" {...register('dataNascimento2', { required: true })} />
                                             <Input label="Instagram (Pessoa 2)" {...register('instagram2')} />
                                             <Input label="Apelido para o Crachá 2" {...register('apelido2', { required: true })} />
+                                            <Input label="Profissão (Pessoa 2)" {...register('profissao2', { required: true })} />
                                         </div>
                                     )}
                                 </Card>
@@ -195,6 +197,15 @@ const InscricaoTrabalhador = () => {
                                     <option value="nao">Não</option>
                                     <option value="sim">Sim</option>
                                 </select>
+                            </div>
+                            <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+                                <label className={styles.label}>Outras Habilidades e Talentos (Descreva)</label>
+                                <textarea
+                                    {...register('habilidadesTalentos')}
+                                    className={styles.textarea}
+                                    placeholder="Ex: Sei cozinhar, mexer com elétrica, decoração, pintura, teatro..."
+                                    rows={3}
+                                />
                             </div>
                         </div>
                     </Card>

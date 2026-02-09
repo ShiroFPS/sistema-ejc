@@ -153,6 +153,8 @@ model InscricaoTrabalhador {
   // Trabalho/Estudo
   trabalhamOuEstudam    Boolean  @default(false)
   areaTrabalhoEstudo    String?
+  profissao1            String?  // Nova solicitação
+  profissao2            String?  // Nova solicitação (para casais)
   
   // Experiência EJC
   paroquiaEjcAno        String   // Ex: "Paróquia Auxiliadora - 2019"
@@ -165,6 +167,7 @@ model InscricaoTrabalhador {
   operaEquipamentosSom  Boolean  @default(false)
   habilidadesComputador Boolean  @default(false)
   trabalhosManuais      Boolean  @default(false)
+  habilidadesTalentos   String?  // Nova solicitação (texto livre)
   
   // Metadados
   createdAt             DateTime @default(now())
