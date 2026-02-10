@@ -50,8 +50,8 @@ const Importar = () => {
             <div className="fade-in">
                 <div className={styles.header}>
                     <div>
-                        <h1 className={styles.title}>Importar Encontreiros</h1>
-                        <p className={styles.subtitle}>Carregar planilha do Google Forms (.xlsx)</p>
+                        <h1 className={styles.title}>Importar Dados</h1>
+                        <p className={styles.subtitle}>Carregar planilha do Google Forms (.xlsx) - Encontristas ou Encontreiros</p>
                     </div>
                     <Button onClick={() => navigate('/admin/dashboard')} variant="ghost">
                         Voltar
@@ -87,12 +87,15 @@ const Importar = () => {
                         {result && (
                             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
                                 <h3>Resultado:</h3>
+                                <p style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--color-primary-400)' }}>
+                                    Tipo detectado: {result.type === 'PARTICIPANTE' ? 'Participantes (Encontristas)' : 'Trabalhadores (Encontreiros)'}
+                                </p>
                                 <p>✅ Importados: {result.imported}</p>
                                 <p>⚠️ Erros: {result.errors?.length || 0}</p>
                                 {result.errors?.length > 0 && (
                                     <ul style={{ maxHeight: '200px', overflowY: 'auto', marginTop: '0.5rem' }}>
                                         {result.errors.map((err, idx) => (
-                                            <li key={idx} style={{ color: 'var(--color-danger)', fontSize: '0.9rem' }}>
+                                            <li key={idx} style={{ color: 'var(--color-danger)', fontSize: '0.8rem', marginBottom: '4px' }}>
                                                 {err.nome}: {err.erro}
                                             </li>
                                         ))}

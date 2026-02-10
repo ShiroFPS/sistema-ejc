@@ -14,14 +14,14 @@ export class InscricaoService {
 
         if (tipo === 'PARTICIPANTE') {
             if (cpf) where.OR.push({ cpf });
-            if (nomeCompleto) where.OR.push({ nomeCompleto: { equals: nomeCompleto, mode: 'insensitive' } });
+            if (nomeCompleto) where.OR.push({ nomeCompleto: nomeCompleto });
 
             const p = await prisma.inscricaoParticipante.findFirst({ where });
             if (p) return { existe: true, nome: p.nomeCompleto, status: p.status };
         } else {
             if (cpf1) where.OR.push({ cpf1 }, { cpf2: cpf1 });
             if (cpf2) where.OR.push({ cpf1: cpf2 }, { cpf2: cpf2 });
-            if (nomeCompleto1) where.OR.push({ nomeCompleto1: { equals: nomeCompleto1, mode: 'insensitive' } });
+            if (nomeCompleto1) where.OR.push({ nomeCompleto1: nomeCompleto1 });
 
             const t = await prisma.inscricaoTrabalhador.findFirst({ where });
             if (t) return { existe: true, nome: t.nomeCompleto1, status: t.status };
@@ -43,7 +43,7 @@ export class InscricaoService {
         const inscricao = await prisma.inscricaoParticipante.create({
             data: {
                 ...dados,
-                status: 'PENDENTE',
+                status: dados.status || 'PENDENTE',
             },
         });
 
@@ -72,7 +72,7 @@ export class InscricaoService {
         const inscricao = await prisma.inscricaoTrabalhador.create({
             data: {
                 ...finalData,
-                status: 'PENDENTE',
+                status: finalData.status || 'PENDENTE',
             },
         });
 
