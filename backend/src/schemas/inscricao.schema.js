@@ -37,6 +37,8 @@ export const participanteSchema = z.object({
     amigosParentesInscritos: z.string().optional().nullable(),
     contatosEmergencia: z.string(), // Mantido como string JSON por enquanto
     corGrupo: z.string().optional().nullable(),
+    fotoUrl: z.string().optional().nullable(),
+    comprovanteUrl: z.string().optional().nullable(),
 });
 
 export const trabalhadorSchema = z.object({
@@ -75,4 +77,6 @@ export const trabalhadorSchema = z.object({
     profissao1: z.string().optional().nullable(),
     profissao2: z.string().optional().nullable(),
     habilidadesTalentos: z.string().optional().nullable(),
+    fotoUrl1: z.string().optional().nullable(),
+    fotoUrl2: z.string().optional().nullable(),
 });

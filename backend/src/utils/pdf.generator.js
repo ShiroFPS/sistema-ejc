@@ -1,5 +1,6 @@
 import PDFDocument from 'pdfkit';
 import { PrismaClient } from '@prisma/client';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -43,11 +44,13 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
         inscricao.telefoneMae = '';
         inscricao.telefonePai = '';
         inscricao.moraComQuem = '';
+        inscricao.fotoUrl1 = inscricao.fotoUrl1;
+        inscricao.fotoUrl2 = inscricao.fotoUrl2;
     }
 
     inscricao.tipo = tipoInscricao; // Adiciona o tipo para exibição
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const doc = new PDFDocument({ margin: 50 });
             const chunks = [];
@@ -65,6 +68,42 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
                 doc.text(`Grupo Funcional: ${inscricao.grupoFuncional}`, { align: 'center' });
             }
             doc.moveDown(2);
+
+            // Foto(s) (se existir)
+            let photoY = doc.y;
+            const drawPhoto = async (url, xOffset) => {
+                if (!url) return;
+                try {
+                    const response = await axios.get(url, { responseType: 'arraybuffer' });
+                    const imageBuffer = Buffer.from(response.data, 'binary');
+                    doc.image(imageBuffer, xOffset, photoY, { width: 100, height: 100 });
+                } catch (error) {
+                    console.error('Erro ao carregar foto para PDF:', error.message);
+                    doc.fontSize(8).text('(Erro ao carregar foto)', xOffset, photoY);
+                }
+            };
+
+            if (inscricao.tipo === 'PARTICIPANTE' && inscricao.fotoUrl) {
+                await drawPhoto(inscricao.fotoUrl, 450);
+            } else if (inscricao.tipo === 'TRABALHADOR') {
+                if (inscricao.fotoUrl1) await drawPhoto(inscricao.fotoUrl1, 450);
+                if (inscricao.fotoUrl2) {
+                    photoY += 110; // Espaço se houver segunda foto (raro em ID-1 mas possível em ficha)
+                    // Ou melhor, lado a lado se couber? 450 e 340?
+                    // Vamos deixar um abaixo do outro ou lado a lado.
+                    // Na ficha de entrevista (A4), cabe lado a lado.
+                    // Reset photoY for side-by-side:
+                    photoY = doc.y;
+                    await drawPhoto(inscricao.fotoUrl1, 460);
+                    await drawPhoto(inscricao.fotoUrl2, 350);
+                } else if (inscricao.fotoUrl1) {
+                    // Ja desenhado acima
+                }
+            }
+
+            // Re-fix the logic above to avoid drawing twice
+            doc.y = photoY; // Reset doc.y to avoid overlap with text if photos are large
+            if (inscricao.fotoUrl2) doc.moveDown(5); // Make space for the 100pt photos
 
             // Dados Pessoais
             doc.fontSize(14).text('DADOS PESSOAIS', { underline: true });

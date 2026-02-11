@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs';
 import { InscricaoService } from '../services/inscricao.service.js';
+import { getDirectDriveUrl } from '../utils/googleDrive.js';
 
 export const importWorkers = async (req, res, next) => {
     try {
@@ -84,6 +85,7 @@ export const importWorkers = async (req, res, next) => {
                         alergias: (values[30] || '').toString(),
                         problemasSaude: (values[31] || '').toString(),
                         medicamentosContinuos: (values[32] || '').toString(),
+                        fotoUrl: getDirectDriveUrl((values[33] || '').toString()),
                     };
 
                     if (!data.nomeCompleto) continue;

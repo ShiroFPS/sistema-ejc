@@ -2,6 +2,7 @@ import { prisma } from '../utils/prisma.js';
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import axios from 'axios';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +21,7 @@ const CARD_HEIGHT = mmToPt(53.98); // ~153.02 pt
 const FULL_WIDTH = CARD_WIDTH * 2; // ~485.28 pt (Verso + Frente)
 
 // Função auxiliar para desenhar um crachá em uma posição específica
-const desenharCracha = (doc, inscricao, x, y) => {
+const desenharCracha = (doc, inscricao, x, y, fotoBuffer = null) => {
     const middleX = x + CARD_WIDTH; // Linha da dobra
 
     // Código curto
@@ -62,6 +63,25 @@ const desenharCracha = (doc, inscricao, x, y) => {
             .fillAndStroke('#6366f1', '#5558d9');
         doc.fontSize(8).fillColor('#ffffff').font('Helvetica-Bold')
             .text('EJC', contentStartX, logoY + mmToPt(5), { width: contentWidth, align: 'center' });
+    }
+
+    // FOTO DO PARTICIPANTE (Se fornecida)
+    if (fotoBuffer) {
+        const fotoSize = mmToPt(16);
+        const fotoX = fX + CARD_WIDTH - stripeWidth - fotoSize - mmToPt(2);
+        const fotoYPos = fY + mmToPt(4);
+
+        try {
+            doc.image(fotoBuffer, fotoX, fotoYPos, {
+                width: fotoSize,
+                height: fotoSize,
+                fit: [fotoSize, fotoSize]
+            });
+            // Borda na foto
+            doc.rect(fotoX, fotoYPos, fotoSize, fotoSize).lineWidth(0.5).stroke(corFaixa);
+        } catch (err) {
+            console.error('Erro ao desenhar foto no crachá:', err);
+        }
     }
 
     // Nome (Ajustado para tamanho pequeno)
@@ -188,7 +208,18 @@ export const gerarCrachaPDF = async (req, res, next) => {
         const startX = (595.28 - FULL_WIDTH) / 2;
         const startY = (841.89 - CARD_HEIGHT) / 2;
 
-        desenharCracha(doc, inscricao, startX, startY);
+        let fotoBuffer = null;
+        const fotoUrl = inscricao.fotoUrl || inscricao.fotoUrl1;
+        if (fotoUrl) {
+            try {
+                const res = await axios.get(fotoUrl, { responseType: 'arraybuffer' });
+                fotoBuffer = Buffer.from(res.data, 'binary');
+            } catch (err) {
+                console.error('Erro ao baixar foto para crachá:', err.message);
+            }
+        }
+
+        desenharCracha(doc, inscricao, startX, startY, fotoBuffer);
 
         doc.end();
     } catch (error) {
@@ -235,6 +266,20 @@ export const gerarCrachasEmLote = async (req, res, next) => {
 
         const gapY = 0; // ZERO GAP para economizar espaço e facilitar corte
 
+        // Pré-carregar fotos para o lote
+        const fotosBufferMap = new Map();
+        await Promise.all(inscricoes.map(async (ins) => {
+            const fotoUrl = ins.fotoUrl || ins.fotoUrl1;
+            if (fotoUrl) {
+                try {
+                    const res = await axios.get(fotoUrl, { responseType: 'arraybuffer' });
+                    fotosBufferMap.set(ins.id, Buffer.from(res.data, 'binary'));
+                } catch (err) {
+                    console.error(`Erro ao baixar foto para crachá ${ins.id}:`, err.message);
+                }
+            }
+        }));
+
         let count = 0;
         let pageCount = 0;
 
@@ -246,7 +291,7 @@ export const gerarCrachasEmLote = async (req, res, next) => {
 
             const y = startY + (pageCount * (CARD_HEIGHT + gapY));
 
-            desenharCracha(doc, inscricao, marginX, y);
+            desenharCracha(doc, inscricao, marginX, y, fotosBufferMap.get(inscricao.id));
 
             // Linha de corte horizontal (apenas embaixo se não for o último, ou entre eles)
             // Como gap é 0, a borda inferior de um é a superior do outro.

@@ -62,7 +62,13 @@ const EditarTrabalhador = () => {
         cpf2: '',
         receberEmail: true,
         receberWhatsapp: true,
+        fotoUrl1: '',
+        fotoUrl2: '',
     });
+    const [fotoPreview1, setFotoPreview1] = useState(null);
+    const [fotoArquivo1, setFotoArquivo1] = useState(null);
+    const [fotoPreview2, setFotoPreview2] = useState(null);
+    const [fotoArquivo2, setFotoArquivo2] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -103,7 +109,11 @@ const EditarTrabalhador = () => {
                     cpf2: d.cpf2 || '',
                     receberEmail: d.receberEmail !== undefined ? d.receberEmail : true,
                     receberWhatsapp: d.receberWhatsapp !== undefined ? d.receberWhatsapp : true,
+                    fotoUrl1: d.fotoUrl1 || '',
+                    fotoUrl2: d.fotoUrl2 || '',
                 });
+                if (d.fotoUrl1) setFotoPreview1(d.fotoUrl1);
+                if (d.fotoUrl2) setFotoPreview2(d.fotoUrl2);
             } catch (error) {
                 console.error('Erro ao buscar trabalhador:', error);
                 toast.error('Erro ao carregar dados');
@@ -123,11 +133,59 @@ const EditarTrabalhador = () => {
         }));
     };
 
+    const handleFotoChange = (num) => (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (num === 1) {
+                setFotoArquivo1(file);
+                setFotoPreview1(URL.createObjectURL(file));
+            } else {
+                setFotoArquivo2(file);
+                setFotoPreview2(URL.createObjectURL(file));
+            }
+        }
+    };
+
     const handleSalvar = async () => {
         setSaving(true);
         try {
             // Limpar datas vazias para evitar erro de Invalid Date no backend
-            const payload = { ...formData };
+            let currentFotoUrl1 = formData.fotoUrl1;
+            let currentFotoUrl2 = formData.fotoUrl2;
+
+            // Upload Foto 1
+            if (fotoArquivo1) {
+                const fd1 = new FormData();
+                fd1.append('foto', fotoArquivo1);
+                try {
+                    const { data } = await api.post('/upload/foto', fd1, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    currentFotoUrl1 = data.url;
+                } catch (error) {
+                    toast.error('Erro ao enviar foto 1');
+                    setSaving(false);
+                    return;
+                }
+            }
+
+            // Upload Foto 2
+            if (fotoArquivo2) {
+                const fd2 = new FormData();
+                fd2.append('foto', fotoArquivo2);
+                try {
+                    const { data } = await api.post('/upload/foto', fd2, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    currentFotoUrl2 = data.url;
+                } catch (error) {
+                    toast.error('Erro ao enviar foto 2');
+                    setSaving(false);
+                    return;
+                }
+            }
+
+            const payload = { ...formData, fotoUrl1: currentFotoUrl1, fotoUrl2: currentFotoUrl2 };
             if (!payload.dataNascimento1) delete payload.dataNascimento1;
             if (!payload.dataNascimento2) delete payload.dataNascimento2;
 
@@ -259,6 +317,20 @@ const EditarTrabalhador = () => {
                                 <label>CPF 1</label>
                                 <input name="cpf1" value={formData.cpf1} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
                             </div>
+                            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                                <label>Foto Pessoa 1</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
+                                    {fotoPreview1 ? (
+                                        <img src={fotoPreview1} alt="Preview 1" style={{ width: '80px', height: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }} />
+                                    ) : (
+                                        <div style={{ width: '80px', height: '100px', background: '#f5f5f5', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#999' }}>Sem foto</div>
+                                    )}
+                                    <input type="file" accept="image/*" onChange={handleFotoChange(1)} id="foto-1" style={{ display: 'none' }} />
+                                    <label htmlFor="foto-1">
+                                        <Button as="span" variant="ghost" size="sm">📷 Alterar Foto 1</Button>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </Card>
 
@@ -296,6 +368,20 @@ const EditarTrabalhador = () => {
                                 <div className={styles.formGroup}>
                                     <label>CPF 2</label>
                                     <input name="cpf2" value={formData.cpf2} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
+                                </div>
+                                <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                                    <label>Foto Pessoa 2</label>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
+                                        {fotoPreview2 ? (
+                                            <img src={fotoPreview2} alt="Preview 2" style={{ width: '80px', height: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }} />
+                                        ) : (
+                                            <div style={{ width: '80px', height: '100px', background: '#f5f5f5', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#999' }}>Sem foto</div>
+                                        )}
+                                        <input type="file" accept="image/*" onChange={handleFotoChange(2)} id="foto-2" style={{ display: 'none' }} />
+                                        <label htmlFor="foto-2">
+                                            <Button as="span" variant="ghost" size="sm">📷 Alterar Foto 2</Button>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </Card>

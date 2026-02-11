@@ -11,6 +11,8 @@ const EditarParticipante = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [fotoPreview, setFotoPreview] = useState(null);
+    const [fotoArquivo, setFotoArquivo] = useState(null);
     const [formData, setFormData] = useState({
         nomeCompleto: '',
         apelido: '',
@@ -63,6 +65,7 @@ const EditarParticipante = () => {
                     ...d,
                     dataNascimento: d.dataNascimento ? new Date(d.dataNascimento).toISOString().split('T')[0] : '',
                 });
+                if (d.fotoUrl) setFotoPreview(d.fotoUrl);
             } catch (error) {
                 toast.error('Erro ao carregar participante');
                 navigate('/admin/inscricoes');
@@ -81,11 +84,37 @@ const EditarParticipante = () => {
         }));
     };
 
+    const handleFotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFotoArquivo(file);
+            setFotoPreview(URL.createObjectURL(file));
+        }
+    };
+
     const handleSalvar = async () => {
         setSaving(true);
         try {
+            let currentFotoUrl = formData.fotoUrl;
+
+            // Fazer upload da foto se houver novo arquivo
+            if (fotoArquivo) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('foto', fotoArquivo);
+                try {
+                    const { data: uploadRes } = await api.post('/upload/foto', uploadFormData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    });
+                    currentFotoUrl = uploadRes.url;
+                } catch (error) {
+                    toast.error('Erro ao enviar foto');
+                    setSaving(false);
+                    return;
+                }
+            }
+
             // Limpar datas vazias
-            const payload = { ...formData };
+            const payload = { ...formData, fotoUrl: currentFotoUrl };
             if (!payload.dataNascimento) delete payload.dataNascimento;
 
             await api.put(`/inscricoes/${id}?tipo=PARTICIPANTE`, payload);
@@ -140,6 +169,32 @@ const EditarParticipante = () => {
                             <div className={styles.formGroup}>
                                 <label>Código Verificação</label>
                                 <input value={formData.codigoVerificacao || ''} disabled className={styles.input} style={{ opacity: 0.7 }} />
+                            </div>
+                            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                                <label>Foto do Encontrista</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
+                                    {fotoPreview ? (
+                                        <img
+                                            src={fotoPreview}
+                                            alt="Preview"
+                                            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px', border: '2px solid var(--color-primary-200)' }}
+                                        />
+                                    ) : (
+                                        <div style={{ width: '100px', height: '100px', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
+                                            Sem foto
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFotoChange}
+                                        style={{ display: 'none' }}
+                                        id="upload-foto"
+                                    />
+                                    <label htmlFor="upload-foto">
+                                        <Button as="span" variant="ghost" size="sm">📷 Alterar Foto</Button>
+                                    </label>
+                                </div>
                             </div>
                             <div className={styles.formGroup}>
                                 <label>Nome Completo</label>

@@ -45,11 +45,6 @@ const InscricaoParticipante = () => {
                 if (url) currentFotoUrl = url;
             }
 
-            if (data.foto?.[0]) {
-                const url = await uploadFile(data.foto[0], 'foto');
-                if (url) currentFotoUrl = url;
-            }
-
             const contatosEmergencia = JSON.stringify([
                 { nome: data.contato1Nome, telefone: data.contato1Telefone },
                 { nome: data.contato2Nome, telefone: data.contato2Telefone },

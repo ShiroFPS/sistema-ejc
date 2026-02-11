@@ -25,8 +25,8 @@ export const uploadFoto = async (req, res, next) => {
                 {
                     folder: 'ejc/fotos',
                     transformation: [
-                        { width: 300, height: 400, crop: 'fill' },
-                        { quality: 'auto' }
+                        { width: 240, height: 320, crop: 'fill', gravity: 'face' },
+                        { quality: 'auto:eco' }
                     ],
                 },
                 (error, result) => {
