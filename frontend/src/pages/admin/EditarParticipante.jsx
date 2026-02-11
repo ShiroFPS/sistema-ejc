@@ -195,7 +195,7 @@ const EditarParticipante = () => {
                                     <div style={{ marginTop: '10px', textAlign: 'center' }}>
                                         <p style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>QR Code:</p>
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/qrcode/${id}?tipo=PARTICIPANTE`}
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/qrcode/${id}?tipo=PARTICIPANTE`}
                                             alt="QR Code de Verificação"
                                             style={{ width: '150px', height: '150px', border: '2px solid #ddd', borderRadius: '8px' }}
                                         />

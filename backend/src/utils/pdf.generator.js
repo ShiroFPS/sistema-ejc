@@ -106,21 +106,21 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.y = initialY;
 
             // Dados Pessoais
-            doc.fontSize(14).text('DADOS PESSOAIS');
-            doc.moveDown(0.5);
-            doc.fontSize(10);
+            doc.fontSize(12).font('Helvetica-Bold').text('DADOS PESSOAIS');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             doc.text(`Nome Completo: ${inscricao.nomeCompleto}`);
             doc.text(`Apelido: ${inscricao.apelido}`);
             doc.text(`Data de Nascimento: ${new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR')}`);
             doc.text(`Sexo: ${inscricao.sexo}`);
             doc.text(`Telefone: ${inscricao.telefone}`);
             if (inscricao.instagram) doc.text(`Instagram: ${inscricao.instagram}`);
-            doc.moveDown();
+            doc.moveDown(0.8);
 
             // Código de Verificação + QR Code
-            doc.fontSize(14).text('CÓDIGO DE VERIFICAÇÃO');
-            doc.moveDown(0.5);
-            doc.fontSize(10);
+            doc.fontSize(12).font('Helvetica-Bold').text('CÓDIGO DE VERIFICAÇÃO');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             doc.text(`Código: ${inscricao.codigoVerificacao}`);
 
             // Adicionar QR Code
@@ -138,14 +138,17 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             } catch (error) {
                 console.error('Erro ao gerar QR code no PDF:', error);
             }
-            doc.moveDown();
+            doc.moveDown(0.8);
 
             // Estado Civil e Profissão
+            doc.fontSize(12).font('Helvetica-Bold').text('INFORMAÇÕES ADICIONAIS');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             doc.text(`Estado Civil: ${inscricao.estadoCivil}`);
             doc.text(`Escolaridade: ${inscricao.escolaridade}`);
             doc.text(`Profissão: ${inscricao.profissao}`);
             if (inscricao.trabalha) doc.text(`Local de Trabalho: ${inscricao.localTrabalho}`);
-            doc.moveDown(2);
+            doc.moveDown(0.8);
 
             // Endereço
             doc.fontSize(12).font('Helvetica-Bold').text('ENDEREÇO');
@@ -207,8 +210,9 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Observações
-            doc.fontSize(14).text('OBSERVAÇÕES DA ENTREVISTA');
-            doc.moveDown(0.5);
+            doc.fontSize(12).font('Helvetica-Bold').text('OBSERVAÇÕES DA ENTREVISTA');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             // Removidas linhas desorganizadas conforme solicitado
 
             doc.end();
