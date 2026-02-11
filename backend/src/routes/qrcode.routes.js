@@ -35,7 +35,10 @@ router.get('/:id', async (req, res, next) => {
             }
         });
 
+        // Headers CORS para permitir carregamento de imagem cross-origin
         res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache por 24h
         res.send(qrCodeImage);
     } catch (error) {
         next(error);
