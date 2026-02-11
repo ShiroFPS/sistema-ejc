@@ -9,211 +9,153 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
     let inscricao = await prisma.inscricaoParticipante.findUnique({
         where: { id: inscricaoId },
     });
-    let tipoInscricao = 'PARTICIPANTE';
 
     if (!inscricao) {
         inscricao = await prisma.inscricaoTrabalhador.findUnique({
             where: { id: inscricaoId },
         });
-        tipoInscricao = 'TRABALHADOR';
+        if (inscricao) inscricao.tipo = 'TRABALHADOR';
+    } else {
+        inscricao.tipo = 'PARTICIPANTE';
     }
 
     if (!inscricao) {
         throw new Error('Inscrição não encontrada');
     }
 
-    // Normalizar dados do trabalhador para o formato esperado pelo PDF
-    if (tipoInscricao === 'TRABALHADOR') {
-        inscricao.nomeCompleto = inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
-            ? `${inscricao.nomeCompleto1} & ${inscricao.nomeCompleto2 || ''}`
-            : inscricao.nomeCompleto1;
-
-        inscricao.apelido = inscricao.apelido || inscricao.apelido2 || ''; // Usa o primeiro ou o segundo
-        inscricao.dataNascimento = inscricao.dataNascimento1 ? inscricao.dataNascimento1.toISOString() : new Date().toISOString(); // Fallback
-        inscricao.sexo = inscricao.sexo1;
-        inscricao.telefone = inscricao.contato1;
-        inscricao.instagram = inscricao.instagram1;
-        inscricao.profissao = inscricao.areaTrabalhoEstudo || 'Não informado';
-        inscricao.trabalha = inscricao.trabalhamOuEstudam;
-        // Campos que não existem no trabalhador ou são diferentes, definimos vazio ou adaptamos
-        inscricao.escolaridade = '';
-        inscricao.localTrabalho = '';
-        inscricao.estadoCivil = inscricao.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' ? 'CASADO/UNIÃO' : 'SOLTEIRO';
-        inscricao.bairro = ''; // Trabalhador só tem enderecoCompleto
-        inscricao.nomeMae = '';
-        inscricao.nomePai = '';
-        inscricao.telefoneMae = '';
-        inscricao.telefonePai = '';
-        inscricao.moraComQuem = '';
-        inscricao.fotoUrl1 = inscricao.fotoUrl1;
-        inscricao.fotoUrl2 = inscricao.fotoUrl2;
-    }
-
-    inscricao.tipo = tipoInscricao; // Adiciona o tipo para exibição
-
     return new Promise(async (resolve, reject) => {
         try {
-            const doc = new PDFDocument({ margin: 50 });
-            const chunks = [];
+            const doc = new PDFDocument({
+                size: 'A4',
+                margins: { top: 50, bottom: 50, left: 50, right: 50 }
+            });
 
-            doc.on('data', (chunk) => chunks.push(chunk));
+            const chunks = [];
+            doc.on('data', chunk => chunks.push(chunk));
             doc.on('end', () => resolve(Buffer.concat(chunks)));
             doc.on('error', reject);
 
-            // Cabeçalho
-            doc.fontSize(18).text('FICHA DE ENTREVISTA - EJC', { align: 'center' });
-            doc.moveDown();
+            // CABEÇALHO
+            doc.font('Helvetica-Bold').fontSize(16).text('FICHA DE ENTREVISTA - EJC', { align: 'center' });
+            doc.moveDown(0.5);
+
             const displayTipo = inscricao.tipo === 'TRABALHADOR' ? 'ENCONTREIRO' : 'ENCONTRISTA';
-            doc.fontSize(10).text(`Tipo: ${displayTipo}`, { align: 'center' });
-            if (inscricao.grupoFuncional) {
-                doc.text(`Grupo Funcional: ${inscricao.grupoFuncional}`, { align: 'center' });
-            }
-            doc.moveDown(2);
+            doc.font('Helvetica').fontSize(10).text(`Tipo: ${displayTipo}`, { align: 'center' });
+            doc.moveDown(1);
 
-            // Foto(s) - posicionadas no canto superior direito
-            const initialY = doc.y;
-            const photoX = 450;
-            let currentPhotoY = initialY;
+            // Linha separadora
+            doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+            doc.moveDown(1);
 
-            const drawPhoto = async (url, yPosition) => {
-                if (!url) return false;
-                try {
-                    const response = await axios.get(url, { responseType: 'arraybuffer' });
-                    const imageBuffer = Buffer.from(response.data, 'binary');
-                    doc.image(imageBuffer, photoX, yPosition, { width: 100, height: 100 });
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao carregar foto para PDF:', error.message);
-                    doc.fontSize(8).text('(Foto indisponível)', photoX, yPosition);
-                    return false;
+            // Helper para adicionar seção
+            const addSection = (title) => {
+                doc.font('Helvetica-Bold').fontSize(11).text(title);
+                doc.moveDown(0.3);
+                doc.font('Helvetica').fontSize(9);
+            };
+
+            // Helper para adicionar campo
+            const addField = (label, value) => {
+                if (value) {
+                    doc.text(`${label}: ${value}`);
                 }
             };
 
-            // Desenhar fotos (participante ou trabalhador)
-            if (inscricao.tipo === 'PARTICIPANTE' && inscricao.fotoUrl) {
-                await drawPhoto(inscricao.fotoUrl, currentPhotoY);
-            } else if (inscricao.tipo === 'TRABALHADOR') {
-                if (inscricao.fotoUrl1) {
-                    await drawPhoto(inscricao.fotoUrl1, currentPhotoY);
-                    currentPhotoY += 110; // Espaço para segunda foto
-                }
-                if (inscricao.fotoUrl2) {
-                    await drawPhoto(inscricao.fotoUrl2, currentPhotoY);
-                }
+            // DADOS PESSOAIS
+            addSection('DADOS PESSOAIS');
+            addField('Nome Completo', inscricao.nomeCompleto || inscricao.nomeCompleto1);
+            addField('Apelido', inscricao.apelido);
+            if (inscricao.dataNascimento) {
+                addField('Data de Nascimento', new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR'));
             }
+            addField('Sexo', inscricao.sexo || inscricao.sexo1);
+            addField('Telefone', inscricao.telefone || inscricao.contato1);
+            addField('Instagram', inscricao.instagram || inscricao.instagram1);
+            doc.moveDown(1);
 
-            // Manter doc.y no topo (não descer por causa das fotos que estão à direita)
-            doc.y = initialY;
+            // CÓDIGO DE VERIFICAÇÃO + QR CODE
+            addSection('CÓDIGO DE VERIFICAÇÃO');
+            const codeY = doc.y;
+            addField('Código', inscricao.codigoVerificacao);
 
-            // Dados Pessoais
-            doc.fontSize(12).font('Helvetica-Bold').text('DADOS PESSOAIS');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            doc.text(`Nome Completo: ${inscricao.nomeCompleto}`);
-            doc.text(`Apelido: ${inscricao.apelido}`);
-            doc.text(`Data de Nascimento: ${new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR')}`);
-            doc.text(`Sexo: ${inscricao.sexo}`);
-            doc.text(`Telefone: ${inscricao.telefone}`);
-            if (inscricao.instagram) doc.text(`Instagram: ${inscricao.instagram}`);
-            doc.moveDown(0.8);
-
-            // Código de Verificação + QR Code
-            doc.fontSize(12).font('Helvetica-Bold').text('CÓDIGO DE VERIFICAÇÃO');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            doc.text(`Código: ${inscricao.codigoVerificacao}`);
-
-            // Adicionar QR Code
+            // QR Code ao lado direito
             try {
-                const qrCodeBuffer = await QRCode.toBuffer(inscricao.codigoVerificacao, {
+                const qrBuffer = await QRCode.toBuffer(inscricao.codigoVerificacao, {
                     type: 'png',
-                    width: 150,
-                    margin: 1,
-                    color: {
-                        dark: '#000000',
-                        light: '#FFFFFF'
-                    }
+                    width: 200,
+                    margin: 1
                 });
-                doc.image(qrCodeBuffer, 450, doc.y - 20, { width: 100, height: 100 });
-            } catch (error) {
-                console.error('Erro ao gerar QR code no PDF:', error);
+                doc.image(qrBuffer, 420, codeY - 10, { width: 80, height: 80 });
+            } catch (err) {
+                console.error('Erro ao gerar QR:', err);
             }
-            doc.moveDown(0.8);
 
-            // Estado Civil e Profissão
-            doc.fontSize(12).font('Helvetica-Bold').text('INFORMAÇÕES ADICIONAIS');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            doc.text(`Estado Civil: ${inscricao.estadoCivil}`);
-            doc.text(`Escolaridade: ${inscricao.escolaridade}`);
-            doc.text(`Profissão: ${inscricao.profissao}`);
-            if (inscricao.trabalha) doc.text(`Local de Trabalho: ${inscricao.localTrabalho}`);
-            doc.moveDown(0.8);
+            doc.moveDown(1);
 
-            // Endereço
-            doc.fontSize(12).font('Helvetica-Bold').text('ENDEREÇO');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            doc.text(`Endereço: ${inscricao.enderecoCompleto}`);
-            doc.text(`Bairro: ${inscricao.bairro}`);
-            doc.text(`Mora com: ${inscricao.moraComQuem}`);
-            doc.moveDown(0.8);
-
-            // Dados dos Pais
-            doc.fontSize(12).font('Helvetica-Bold').text('DADOS DOS PAIS');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            doc.text(`Mãe: ${inscricao.nomeMae}`);
-            doc.text(`Telefone da Mãe: ${inscricao.telefoneMae}`);
-            doc.text(`Pai: ${inscricao.nomePai}`);
-            doc.text(`Telefone do Pai: ${inscricao.telefonePai}`);
-            doc.moveDown(0.8);
-
-            // Saúde
-            doc.fontSize(12).font('Helvetica-Bold').text('INFORMAÇÕES DE SAÚDE');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            if (inscricao.restricoesAlimentares) {
-                doc.text(`Restrições Alimentares: ${inscricao.restricoesAlimentares}`);
+            // INFORMAÇÕES ADICIONAIS
+            if (inscricao.estadoCivil) {
+                addSection('INFORMAÇÕES ADICIONAIS');
+                addField('Estado Civil', inscricao.estadoCivil);
+                addField('Escolaridade', inscricao.escolaridade);
+                addField('Profissão', inscricao.profissao);
+                if (inscricao.trabalha) addField('Local de Trabalho', inscricao.localTrabalho);
+                doc.moveDown(1);
             }
-            if (inscricao.alergias) {
-                doc.text(`Alergias: ${inscricao.alergias}`);
-            }
-            if (inscricao.problemasSaude) {
-                doc.text(`Problemas de Saúde: ${inscricao.problemasSaude}`);
-            }
-            if (inscricao.medicamentosContinuos) {
-                doc.text(`Medicamentos Contínuos: ${inscricao.medicamentosContinuos}`);
-            }
-            doc.moveDown(0.8);
 
-            // Amigos/Parentes Próximos
+            // ENDEREÇO
+            if (inscricao.enderecoCompleto) {
+                addSection('ENDEREÇO');
+                addField('Endereço', inscricao.enderecoCompleto);
+                addField('Bairro', inscricao.bairro);
+                addField('Mora com', inscricao.moraComQuem);
+                doc.moveDown(1);
+            }
+
+            // DADOS DOS PAIS
+            if (inscricao.nomeMae || inscricao.nomePai) {
+                addSection('DADOS DOS PAIS');
+                addField('Mãe', inscricao.nomeMae);
+                addField('Telefone da Mãe', inscricao.telefoneMae);
+                addField('Pai', inscricao.nomePai);
+                addField('Telefone do Pai', inscricao.telefonePai);
+                doc.moveDown(1);
+            }
+
+            // INFORMAÇÕES DE SAÚDE
+            if (inscricao.restricoesAlimentares || inscricao.alergias || inscricao.problemasSaude) {
+                addSection('INFORMAÇÕES DE SAÚDE');
+                addField('Restrições Alimentares', inscricao.restricoesAlimentares);
+                addField('Alergias', inscricao.alergias);
+                addField('Problemas de Saúde', inscricao.problemasSaude);
+                addField('Medicamentos Contínuos', inscricao.medicamentosContinuos);
+                doc.moveDown(1);
+            }
+
+            // CONTATOS DE EMERGÊNCIA
             if (inscricao.contatosEmergencia) {
                 try {
                     const contatos = JSON.parse(inscricao.contatosEmergencia);
                     if (contatos.length > 0) {
-                        doc.fontSize(12).font('Helvetica-Bold').text('AMIGOS/PARENTES PRÓXIMOS (NÃO INSCRITOS)');
-                        doc.moveDown(0.3);
-                        doc.fontSize(9).font('Helvetica');
+                        addSection('CONTATOS DE EMERGÊNCIA');
                         contatos.forEach((c, idx) => {
                             if (c.nome && c.telefone) {
                                 doc.text(`${idx + 1}. ${c.nome} - Tel: ${c.telefone}`);
                             }
                         });
-                        doc.moveDown(0.8);
+                        doc.moveDown(1);
                     }
                 } catch (e) {
-                    console.error('Erro ao renderizar contatos no PDF:', e);
+                    console.error('Erro ao parsear contatos:', e);
                 }
             }
 
-            doc.moveDown(2);
-
-            // Observações
-            doc.fontSize(12).font('Helvetica-Bold').text('OBSERVAÇÕES DA ENTREVISTA');
-            doc.moveDown(0.3);
-            doc.fontSize(9).font('Helvetica');
-            // Removidas linhas desorganizadas conforme solicitado
+            // OBSERVAÇÕES
+            addSection('OBSERVAÇÕES DA ENTREVISTA');
+            doc.text('_'.repeat(80));
+            doc.moveDown(0.5);
+            doc.text('_'.repeat(80));
+            doc.moveDown(0.5);
+            doc.text('_'.repeat(80));
 
             doc.end();
         } catch (error) {
@@ -229,7 +171,7 @@ export const gerarListaPresenca = async (filtros = {}) => {
     if (!filtros.tipo || filtros.tipo === 'PARTICIPANTE') {
         const where = {};
         if (filtros.status) where.status = filtros.status;
-        if (filtros.corGrupo) where.corGrupo = filtros.corGrupo; // Suportar filtro de cor
+        if (filtros.corGrupo) where.corGrupo = filtros.corGrupo;
 
         const parts = await prisma.inscricaoParticipante.findMany({
             where,
@@ -245,81 +187,37 @@ export const gerarListaPresenca = async (filtros = {}) => {
         if (filtros.grupoFuncional) where.grupoFuncional = filtros.grupoFuncional;
         if (filtros.funcaoTrabalhador) where.funcaoTrabalhador = filtros.funcaoTrabalhador;
 
-        const trabs = await prisma.inscricaoTrabalhador.findMany({
-            where,
-        }); // Trabalhadores precisam de normalização de nome para ordenação
-
+        const trabs = await prisma.inscricaoTrabalhador.findMany({ where });
         const trabsNormalized = trabs.map(t => ({
             ...t,
             tipo: 'TRABALHADOR',
-            nomeCompleto: t.tipoInscricao === 'CASAIS_UNIAO_ESTAVEL'
-                ? `${t.nomeCompleto1} & ${t.nomeCompleto2}`
-                : t.nomeCompleto1,
-            telefone: t.contato1
+            nomeCompleto: t.nomeCompleto1 || '',
         }));
-
         inscricoes = [...inscricoes, ...trabsNormalized];
     }
 
-    // Ordenar final por Nome
-    inscricoes.sort((a, b) => a.nomeCompleto.localeCompare(b.nomeCompleto));
+    inscricoes.sort((a, b) => (a.nomeCompleto || '').localeCompare(b.nomeCompleto || ''));
 
     return new Promise((resolve, reject) => {
-        try {
-            const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
-            const chunks = [];
+        const doc = new PDFDocument({ size: 'A4', margins: { top: 50, bottom: 50, left: 50, right: 50 } });
+        const chunks = [];
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
 
-            doc.on('data', (chunk) => chunks.push(chunk));
-            doc.on('end', () => resolve(Buffer.concat(chunks)));
-            doc.on('error', reject);
+        doc.font('Helvetica-Bold').fontSize(16).text('LISTA DE PRESENÇA - EJC', { align: 'center' });
+        doc.moveDown(1);
 
-            // Cabeçalho
-            doc.fontSize(16).text('LISTA DE PRESENÇA - EJC', { align: 'center' });
-            doc.moveDown();
-            doc.fontSize(10).text(`Total: ${inscricoes.length} pessoas`, { align: 'center' });
-            doc.moveDown(2);
+        inscricoes.forEach((insc, idx) => {
+            const nome = insc.nomeCompleto || insc.nomeCompleto1 || 'Sem nome';
+            doc.font('Helvetica').fontSize(10).text(`${idx + 1}. ${nome} _________________________`);
+            doc.moveDown(0.3);
 
-            // Tabela
-            const tableTop = doc.y;
-            const itemHeight = 25;
+            if ((idx + 1) % 25 === 0 && idx < inscricoes.length - 1) {
+                doc.addPage();
+            }
+        });
 
-            // Headers
-            doc.fontSize(9).font('Helvetica-Bold');
-            doc.text('#', 30, tableTop, { width: 30 });
-            doc.text('Nome', 60, tableTop, { width: 200 });
-            doc.text('Apelido', 260, tableTop, { width: 100 });
-            doc.text('Telefone', 360, tableTop, { width: 100 });
-            doc.text('Grupo', 460, tableTop, { width: 80 });
-            doc.text('Assinatura', 540, tableTop, { width: 200 });
-
-            doc.font('Helvetica');
-            doc.moveTo(30, tableTop + 15).lineTo(750, tableTop + 15).stroke();
-
-            // Linhas
-            inscricoes.forEach((inscricao, index) => {
-                const y = tableTop + itemHeight * (index + 1);
-
-                if (y > 550) {
-                    doc.addPage();
-                    return;
-                }
-
-                doc.fontSize(8);
-                doc.text(index + 1, 30, y, { width: 30 });
-                doc.text(inscricao.nomeCompleto.substring(0, 30), 60, y, { width: 200 });
-                doc.text(inscricao.apelido, 260, y, { width: 100 });
-                doc.text(inscricao.telefone, 360, y, { width: 100 });
-
-                if (inscricao.grupoFuncional) {
-                    doc.text(inscricao.grupoFuncional, 460, y, { width: 80 });
-                }
-
-                doc.moveTo(30, y + 20).lineTo(750, y + 20).stroke();
-            });
-
-            doc.end();
-        } catch (error) {
-            reject(error);
-        }
+        doc.end();
     });
 };
