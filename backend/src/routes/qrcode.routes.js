@@ -1,9 +1,16 @@
 import express from 'express';
 import QRCode from 'qrcode';
 import { prisma } from '../utils/prisma.js';
+import cors from 'cors';
 
 const router = express.Router();
 
+// Aplicar CORS explicitamente para esta rota
+router.use(cors({
+    origin: '*',
+    methods: ['GET'],
+    credentials: false
+}));
 // Gerar QR Code para um participante ou trabalhador
 router.get('/:id', async (req, res, next) => {
     try {
