@@ -62,6 +62,18 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             };
 
             // DADOS PESSOAIS
+            // Tentar carregar a foto primeiro
+            if (inscricao.fotoUrl) {
+                try {
+                    const response = await axios.get(inscricao.fotoUrl, { responseType: 'arraybuffer' });
+                    const imageBuffer = Buffer.from(response.data, 'binary');
+                    // Foto no canto superior direito (abaixo da linha separadora)
+                    doc.image(imageBuffer, 450, 130, { width: 90, height: 120, fit: [90, 120] });
+                } catch (error) {
+                    console.error('Erro ao carregar foto para o PDF:', error.message);
+                }
+            }
+
             addSection('DADOS PESSOAIS');
             addField('Nome Completo', inscricao.nomeCompleto || inscricao.nomeCompleto1);
             addField('Apelido', inscricao.apelido);
