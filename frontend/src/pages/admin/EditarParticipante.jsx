@@ -210,12 +210,31 @@ const EditarParticipante = () => {
                                             src={fotoPreview}
                                             alt="Preview"
                                             style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px', border: '2px solid var(--color-primary-200)' }}
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextElementSibling.style.display = 'flex';
+                                            }}
                                         />
-                                    ) : (
-                                        <div style={{ width: '100px', height: '100px', background: '#f5f5f5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
-                                            Sem foto
-                                        </div>
-                                    )}
+                                    ) : null}
+                                    <div style={{
+                                        width: '100px',
+                                        height: '100px',
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        borderRadius: '8px',
+                                        display: fotoPreview ? 'none' : 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#fff',
+                                        fontWeight: '600',
+                                        fontSize: '14px',
+                                        textAlign: 'center',
+                                        padding: '10px',
+                                        flexDirection: 'column',
+                                        gap: '5px'
+                                    }}>
+                                        <span style={{ fontSize: '24px' }}>📷</span>
+                                        <span>Sem Foto</span>
+                                    </div>
                                     <input
                                         type="file"
                                         accept="image/*"

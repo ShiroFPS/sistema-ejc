@@ -116,6 +116,30 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             if (inscricao.instagram) doc.text(`Instagram: ${inscricao.instagram}`);
             doc.moveDown();
 
+            // Código de Verificação + QR Code
+            doc.fontSize(14).text('CÓDIGO DE VERIFICAÇÃO');
+            doc.moveDown(0.5);
+            doc.fontSize(10);
+            doc.text(`Código: ${inscricao.codigoVerificacao}`);
+
+            // Adicionar QR Code se possível
+            try {
+                const QRCode = require('qrcode');
+                const qrCodeBuffer = await QRCode.toBuffer(inscricao.codigoVerificacao, {
+                    type: 'png',
+                    width: 150,
+                    margin: 1,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                });
+                doc.image(qrCodeBuffer, 450, doc.y - 20, { width: 100, height: 100 });
+            } catch (error) {
+                console.error('Erro ao gerar QR code no PDF:', error);
+            }
+            doc.moveDown();
+
             // Estado Civil e Profissão
             doc.text(`Estado Civil: ${inscricao.estadoCivil}`);
             doc.text(`Escolaridade: ${inscricao.escolaridade}`);
