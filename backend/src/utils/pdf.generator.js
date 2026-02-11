@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
+import QRCode from 'qrcode';
 
 const prisma = new PrismaClient();
 
@@ -122,9 +123,8 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.fontSize(10);
             doc.text(`Código: ${inscricao.codigoVerificacao}`);
 
-            // Adicionar QR Code se possível
+            // Adicionar QR Code
             try {
-                const QRCode = require('qrcode');
                 const qrCodeBuffer = await QRCode.toBuffer(inscricao.codigoVerificacao, {
                     type: 'png',
                     width: 150,
