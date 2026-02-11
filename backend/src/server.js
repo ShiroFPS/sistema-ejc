@@ -26,9 +26,12 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https:"],
+            imgSrc: ["'self'", "data:", "https:", "*"], // Permitir imagens de qualquer lugar
+            connectSrc: ["'self'", "https:", "*"],
         },
     },
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // PERMITIR CARREGAMENTO DE RECURSOS (IMAGENS) DE OUTROS ORIGENS
+    crossOriginEmbedderPolicy: false,
 }));
 
 // Rate Limiting
