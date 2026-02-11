@@ -191,6 +191,16 @@ const EditarParticipante = () => {
                             <div className={styles.formGroup}>
                                 <label>Código Verificação</label>
                                 <input value={formData.codigoVerificacao || ''} disabled className={styles.input} style={{ opacity: 0.7 }} />
+                                {formData.codigoVerificacao && (
+                                    <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                                        <p style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>QR Code:</p>
+                                        <img
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/qrcode/${id}?tipo=PARTICIPANTE`}
+                                            alt="QR Code de Verificação"
+                                            style={{ width: '150px', height: '150px', border: '2px solid #ddd', borderRadius: '8px' }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
                                 <label>Foto do Encontrista</label>

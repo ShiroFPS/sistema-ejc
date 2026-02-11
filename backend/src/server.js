@@ -15,6 +15,7 @@ import exportRoutes from './routes/export.routes.js';
 import importRoutes from './routes/import.routes.js';
 import trabalhadoresRoutes from './routes/trabalhadores.routes.js';
 import crachaRoutes from './routes/cracha.routes.js';
+import qrcodeRoutes from './routes/qrcode.routes.js';
 
 const app = express();
 
@@ -95,6 +96,7 @@ app.use('/api/export', exportRoutes);
 app.use('/api/imports', importRoutes); // Nova rota de importação
 app.use('/api/inscricoes/trabalhadores', trabalhadoresRoutes);
 app.use('/api/cracha', crachaRoutes);
+app.use('/api/qrcode', qrcodeRoutes);
 
 // Error handler
 app.use(errorHandler);

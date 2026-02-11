@@ -61,7 +61,6 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
 
             // Cabeçalho
             doc.fontSize(18).text('FICHA DE ENTREVISTA - EJC', { align: 'center' });
-            doc.fontSize(8).text('VERSÃO: 10/02 - v2 (SEM LINHAS)', { align: 'right' });
             doc.moveDown();
             const displayTipo = inscricao.tipo === 'TRABALHADOR' ? 'ENCONTREIRO' : 'ENCONTRISTA';
             doc.fontSize(10).text(`Tipo: ${displayTipo}`, { align: 'center' });
@@ -70,41 +69,40 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             }
             doc.moveDown(2);
 
-            // Foto(s) (se existir)
-            let photoY = doc.y;
-            const drawPhoto = async (url, xOffset) => {
-                if (!url) return;
+            // Foto(s) - posicionadas no canto superior direito
+            const initialY = doc.y;
+            const photoX = 450;
+            let currentPhotoY = initialY;
+
+            const drawPhoto = async (url, yPosition) => {
+                if (!url) return false;
                 try {
                     const response = await axios.get(url, { responseType: 'arraybuffer' });
                     const imageBuffer = Buffer.from(response.data, 'binary');
-                    doc.image(imageBuffer, xOffset, photoY, { width: 100, height: 100 });
+                    doc.image(imageBuffer, photoX, yPosition, { width: 100, height: 100 });
+                    return true;
                 } catch (error) {
                     console.error('Erro ao carregar foto para PDF:', error.message);
-                    doc.fontSize(8).text('(Erro ao carregar foto)', xOffset, photoY);
+                    doc.fontSize(8).text('(Foto indisponível)', photoX, yPosition);
+                    return false;
                 }
             };
 
+            // Desenhar fotos (participante ou trabalhador)
             if (inscricao.tipo === 'PARTICIPANTE' && inscricao.fotoUrl) {
-                await drawPhoto(inscricao.fotoUrl, 450);
+                await drawPhoto(inscricao.fotoUrl, currentPhotoY);
             } else if (inscricao.tipo === 'TRABALHADOR') {
-                if (inscricao.fotoUrl1) await drawPhoto(inscricao.fotoUrl1, 450);
+                if (inscricao.fotoUrl1) {
+                    await drawPhoto(inscricao.fotoUrl1, currentPhotoY);
+                    currentPhotoY += 110; // Espaço para segunda foto
+                }
                 if (inscricao.fotoUrl2) {
-                    photoY += 110; // Espaço se houver segunda foto (raro em ID-1 mas possível em ficha)
-                    // Ou melhor, lado a lado se couber? 450 e 340?
-                    // Vamos deixar um abaixo do outro ou lado a lado.
-                    // Na ficha de entrevista (A4), cabe lado a lado.
-                    // Reset photoY for side-by-side:
-                    photoY = doc.y;
-                    await drawPhoto(inscricao.fotoUrl1, 460);
-                    await drawPhoto(inscricao.fotoUrl2, 350);
-                } else if (inscricao.fotoUrl1) {
-                    // Ja desenhado acima
+                    await drawPhoto(inscricao.fotoUrl2, currentPhotoY);
                 }
             }
 
-            // Re-fix the logic above to avoid drawing twice
-            doc.y = photoY; // Reset doc.y to avoid overlap with text if photos are large
-            if (inscricao.fotoUrl2) doc.moveDown(5); // Make space for the 100pt photos
+            // Manter doc.y no topo (não descer por causa das fotos que estão à direita)
+            doc.y = initialY;
 
             // Dados Pessoais
             doc.fontSize(14).text('DADOS PESSOAIS');
