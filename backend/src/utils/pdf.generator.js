@@ -148,28 +148,28 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Endereço
-            doc.fontSize(14).text('ENDEREÇO');
-            doc.moveDown(0.5);
-            doc.fontSize(10);
-            doc.text(`Endereço: ${inscricao.enderecoCompleto}`);
-            doc.text(`Bairro: ${inscricao.bairro}`);
-            doc.text(`Mora com: ${inscricao.moraComQuem}`);
-            doc.moveDown(2);
+            doc.fontSize(12).font('Helvetica-Bold').text('ENDEREÇO', margin, doc.y);
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
+            doc.text(`Endereço: ${inscricao.enderecoCompleto}`, margin, doc.y, { width: contentWidth });
+            doc.text(`Bairro: ${inscricao.bairro}`, margin, doc.y, { width: contentWidth });
+            doc.text(`Mora com: ${inscricao.moraComQuem}`, margin, doc.y, { width: contentWidth });
+            doc.moveDown(0.8);
 
             // Dados dos Pais
-            doc.fontSize(14).text('DADOS DOS PAIS');
-            doc.moveDown(0.5);
-            doc.fontSize(10);
+            doc.fontSize(12).font('Helvetica-Bold').text('DADOS DOS PAIS');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             doc.text(`Mãe: ${inscricao.nomeMae}`);
             doc.text(`Telefone da Mãe: ${inscricao.telefoneMae}`);
             doc.text(`Pai: ${inscricao.nomePai}`);
             doc.text(`Telefone do Pai: ${inscricao.telefonePai}`);
-            doc.moveDown(2);
+            doc.moveDown(0.8);
 
             // Saúde
-            doc.fontSize(14).text('INFORMAÇÕES DE SAÚDE');
-            doc.moveDown(0.5);
-            doc.fontSize(10);
+            doc.fontSize(12).font('Helvetica-Bold').text('INFORMAÇÕES DE SAÚDE');
+            doc.moveDown(0.3);
+            doc.fontSize(9).font('Helvetica');
             if (inscricao.restricoesAlimentares) {
                 doc.text(`Restrições Alimentares: ${inscricao.restricoesAlimentares}`);
             }
@@ -182,22 +182,22 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             if (inscricao.medicamentosContinuos) {
                 doc.text(`Medicamentos Contínuos: ${inscricao.medicamentosContinuos}`);
             }
-            doc.moveDown();
+            doc.moveDown(0.8);
 
             // Amigos/Parentes Próximos
             if (inscricao.contatosEmergencia) {
                 try {
                     const contatos = JSON.parse(inscricao.contatosEmergencia);
                     if (contatos.length > 0) {
-                        doc.fontSize(14).text('AMIGOS/PARENTES PRÓXIMOS (NÃO INSCRITOS)');
-                        doc.moveDown(0.5);
-                        doc.fontSize(10);
+                        doc.fontSize(12).font('Helvetica-Bold').text('AMIGOS/PARENTES PRÓXIMOS (NÃO INSCRITOS)');
+                        doc.moveDown(0.3);
+                        doc.fontSize(9).font('Helvetica');
                         contatos.forEach((c, idx) => {
                             if (c.nome && c.telefone) {
                                 doc.text(`${idx + 1}. ${c.nome} - Tel: ${c.telefone}`);
                             }
                         });
-                        doc.moveDown();
+                        doc.moveDown(0.8);
                     }
                 } catch (e) {
                     console.error('Erro ao renderizar contatos no PDF:', e);
