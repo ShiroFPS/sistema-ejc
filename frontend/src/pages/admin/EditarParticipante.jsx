@@ -54,7 +54,9 @@ const EditarParticipante = () => {
         receberWhatsapp: true,
         corGrupo: '',
         codigoVerificacao: '',
+        contatosEmergencia: '[]',
     });
+    const [contatosJson, setContatosJson] = useState([]);
 
     useEffect(() => {
         const fetchParticipante = async () => {
@@ -65,6 +67,15 @@ const EditarParticipante = () => {
                     ...d,
                     dataNascimento: d.dataNascimento ? new Date(d.dataNascimento).toISOString().split('T')[0] : '',
                 });
+                if (d.contatosEmergencia) {
+                    try {
+                        const parsed = JSON.parse(d.contatosEmergencia);
+                        setContatosJson(parsed);
+                    } catch (e) {
+                        console.error('Erro ao parsear contatos:', e);
+                        setContatosJson([]);
+                    }
+                }
                 if (d.fotoUrl) setFotoPreview(d.fotoUrl);
             } catch (error) {
                 toast.error('Erro ao carregar participante');
@@ -92,6 +103,13 @@ const EditarParticipante = () => {
         }
     };
 
+    const handleContatoChange = (index, field) => (e) => {
+        const newContatos = [...contatosJson];
+        if (!newContatos[index]) newContatos[index] = { nome: '', telefone: '' };
+        newContatos[index][field] = e.target.value;
+        setContatosJson(newContatos);
+    };
+
     const handleSalvar = async () => {
         setSaving(true);
         try {
@@ -113,8 +131,12 @@ const EditarParticipante = () => {
                 }
             }
 
-            // Limpar datas vazias
-            const payload = { ...formData, fotoUrl: currentFotoUrl };
+            // Limpar datas vazias e converter contatos para JSON
+            const payload = {
+                ...formData,
+                fotoUrl: currentFotoUrl,
+                contatosEmergencia: JSON.stringify(contatosJson.filter(c => c.nome || c.telefone))
+            };
             if (!payload.dataNascimento) delete payload.dataNascimento;
 
             await api.put(`/inscricoes/${id}?tipo=PARTICIPANTE`, payload);
@@ -195,6 +217,10 @@ const EditarParticipante = () => {
                                         <Button as="span" variant="ghost" size="sm">📷 Alterar Foto</Button>
                                     </label>
                                 </div>
+                                <p style={{ fontSize: '11px', color: '#666', marginTop: '5px' }}>
+                                    * Formato recomendado: 3x4 (será redimensionado para 240x320).<br />
+                                    * Tamanho máximo: 5MB. Qualidade otimizada automaticamente.
+                                </p>
                             </div>
                             <div className={styles.formGroup}>
                                 <label>Nome Completo</label>

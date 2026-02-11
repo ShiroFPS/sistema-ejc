@@ -61,6 +61,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
 
             // Cabeçalho
             doc.fontSize(18).text('FICHA DE ENTREVISTA - EJC', { align: 'center' });
+            doc.fontSize(8).text('VERSÃO: 10/02 - v2 (SEM LINHAS)', { align: 'right' });
             doc.moveDown();
             const displayTipo = inscricao.tipo === 'TRABALHADOR' ? 'ENCONTREIRO' : 'ENCONTRISTA';
             doc.fontSize(10).text(`Tipo: ${displayTipo}`, { align: 'center' });
@@ -143,7 +144,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.text(`Telefone do Pai: ${inscricao.telefonePai}`);
             doc.moveDown(2);
 
-            // Informações de Saúde
+            // Saúde
             doc.fontSize(14).text('INFORMAÇÕES DE SAÚDE');
             doc.moveDown(0.5);
             doc.fontSize(10);
@@ -159,6 +160,28 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             if (inscricao.medicamentosContinuos) {
                 doc.text(`Medicamentos Contínuos: ${inscricao.medicamentosContinuos}`);
             }
+            doc.moveDown();
+
+            // Amigos/Parentes Próximos
+            if (inscricao.contatosEmergencia) {
+                try {
+                    const contatos = JSON.parse(inscricao.contatosEmergencia);
+                    if (contatos.length > 0) {
+                        doc.fontSize(14).text('AMIGOS/PARENTES PRÓXIMOS (NÃO INSCRITOS)');
+                        doc.moveDown(0.5);
+                        doc.fontSize(10);
+                        contatos.forEach((c, idx) => {
+                            if (c.nome && c.telefone) {
+                                doc.text(`${idx + 1}. ${c.nome} - Tel: ${c.telefone}`);
+                            }
+                        });
+                        doc.moveDown();
+                    }
+                } catch (e) {
+                    console.error('Erro ao renderizar contatos no PDF:', e);
+                }
+            }
+
             doc.moveDown(2);
 
             // Observações

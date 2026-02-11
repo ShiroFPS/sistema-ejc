@@ -330,6 +330,9 @@ const EditarTrabalhador = () => {
                                         <Button as="span" variant="ghost" size="sm">📷 Alterar Foto 1</Button>
                                     </label>
                                 </div>
+                                <p style={{ fontSize: '11px', color: '#666', marginTop: '5px' }}>
+                                    * Formato: 3x4. Máx: 5MB. Otimizado automaticamente.
+                                </p>
                             </div>
                         </div>
                     </Card>
@@ -382,6 +385,9 @@ const EditarTrabalhador = () => {
                                             <Button as="span" variant="ghost" size="sm">📷 Alterar Foto 2</Button>
                                         </label>
                                     </div>
+                                    <p style={{ fontSize: '11px', color: '#666', marginTop: '5px' }}>
+                                        * Formato: 3x4. Máx: 5MB. Otimizado automaticamente.
+                                    </p>
                                 </div>
                             </div>
                         </Card>

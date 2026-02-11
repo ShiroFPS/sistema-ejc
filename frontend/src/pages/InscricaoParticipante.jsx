@@ -153,13 +153,13 @@ const InscricaoParticipante = () => {
                     </Card>
 
                     <Card>
-                        <h2 className={styles.sectionTitle}>📞 Contatos Extras</h2>
-                        <p className={styles.helpText}>Forneça contatos de amigos/parentes que NÃO estão no EJC:</p>
+                        <h2 className={styles.sectionTitle}>📞 Contatos de Amigos/Parentes Próximos</h2>
+                        <p className={styles.helpText}>Forneça nome completo e telefone de 5 pessoas que NÃO estão fazendo a inscrição no EJC:</p>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            {[1, 2, 3].map(i => (
+                            {[1, 2, 3, 4, 5].map(i => (
                                 <React.Fragment key={i}>
-                                    <Input label={`Nome Contato ${i}`} {...register(`contato${i}Nome`, { required: true })} />
-                                    <Input label={`WhatsApp ${i}`} {...register(`contato${i}Telefone`, { required: true })} />
+                                    <Input label={`Nome Completo ${i}`} {...register(`contato${i}Nome`, { required: i <= 3 ? 'Obrigatório' : false })} />
+                                    <Input label={`WhatsApp ${i}`} {...register(`contato${i}Telefone`, { required: i <= 3 ? 'Obrigatório' : false })} />
                                 </React.Fragment>
                             ))}
                         </div>
