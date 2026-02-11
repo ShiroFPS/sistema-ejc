@@ -148,12 +148,12 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Endereço
-            doc.fontSize(12).font('Helvetica-Bold').text('ENDEREÇO', margin, doc.y);
+            doc.fontSize(12).font('Helvetica-Bold').text('ENDEREÇO');
             doc.moveDown(0.3);
             doc.fontSize(9).font('Helvetica');
-            doc.text(`Endereço: ${inscricao.enderecoCompleto}`, margin, doc.y, { width: contentWidth });
-            doc.text(`Bairro: ${inscricao.bairro}`, margin, doc.y, { width: contentWidth });
-            doc.text(`Mora com: ${inscricao.moraComQuem}`, margin, doc.y, { width: contentWidth });
+            doc.text(`Endereço: ${inscricao.enderecoCompleto}`);
+            doc.text(`Bairro: ${inscricao.bairro}`);
+            doc.text(`Mora com: ${inscricao.moraComQuem}`);
             doc.moveDown(0.8);
 
             // Dados dos Pais
