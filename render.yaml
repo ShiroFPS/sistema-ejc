@@ -4,14 +4,14 @@ services:
     env: node
     plan: free
     rootDirectory: backend
-    buildCommand: npm install && npm run migrate:deploy && npm run prisma:seed
+    buildCommand: npm install && npx prisma migrate deploy && npm run prisma:seed
     startCommand: npm start
     autoDeploy: false
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: "file:./dev.db"
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
