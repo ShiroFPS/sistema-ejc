@@ -106,7 +106,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             if (inscricao.fotoUrl2) doc.moveDown(5); // Make space for the 100pt photos
 
             // Dados Pessoais
-            doc.fontSize(14).text('DADOS PESSOAIS', { underline: true });
+            doc.fontSize(14).text('DADOS PESSOAIS');
             doc.moveDown(0.5);
             doc.fontSize(10);
             doc.text(`Nome Completo: ${inscricao.nomeCompleto}`);
@@ -125,7 +125,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Endereço
-            doc.fontSize(14).text('ENDEREÇO', { underline: true });
+            doc.fontSize(14).text('ENDEREÇO');
             doc.moveDown(0.5);
             doc.fontSize(10);
             doc.text(`Endereço: ${inscricao.enderecoCompleto}`);
@@ -134,7 +134,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Dados dos Pais
-            doc.fontSize(14).text('DADOS DOS PAIS', { underline: true });
+            doc.fontSize(14).text('DADOS DOS PAIS');
             doc.moveDown(0.5);
             doc.fontSize(10);
             doc.text(`Mãe: ${inscricao.nomeMae}`);
@@ -144,7 +144,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Informações de Saúde
-            doc.fontSize(14).text('INFORMAÇÕES DE SAÚDE', { underline: true });
+            doc.fontSize(14).text('INFORMAÇÕES DE SAÚDE');
             doc.moveDown(0.5);
             doc.fontSize(10);
             if (inscricao.restricoesAlimentares) {
@@ -162,7 +162,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             doc.moveDown(2);
 
             // Observações
-            doc.fontSize(14).text('OBSERVAÇÕES DA ENTREVISTA', { underline: true });
+            doc.fontSize(14).text('OBSERVAÇÕES DA ENTREVISTA');
             doc.moveDown(0.5);
             // Removidas linhas desorganizadas conforme solicitado
 
