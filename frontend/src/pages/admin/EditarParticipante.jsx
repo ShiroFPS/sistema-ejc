@@ -350,6 +350,32 @@ const EditarParticipante = () => {
                     </Card>
 
                     <Card>
+                        <h2 className={styles.sectionTitle}>📞 Amigos/Parentes (NÃO estão fazendo inscrição)</h2>
+                        <div className={styles.formGrid}>
+                            {[0, 1, 2, 3, 4].map(i => (
+                                <React.Fragment key={i}>
+                                    <div className={styles.formGroup}>
+                                        <label>Nome Completo {i + 1}</label>
+                                        <input
+                                            value={contatosJson[i]?.nome || ''}
+                                            onChange={handleContatoChange(i, 'nome')}
+                                            className={styles.input}
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>WhatsApp {i + 1}</label>
+                                        <input
+                                            value={contatosJson[i]?.telefone || ''}
+                                            onChange={handleContatoChange(i, 'telefone')}
+                                            className={styles.input}
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </Card>
+
+                    <Card>
                         <h2 className={styles.sectionTitle}>📌 Outros</h2>
                         <div className={styles.formGroup}>
                             <label>Amigos/Parentes Inscritos</label>
