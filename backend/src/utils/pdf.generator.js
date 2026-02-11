@@ -163,12 +163,8 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
 
             // Observações
             doc.fontSize(14).text('OBSERVAÇÕES DA ENTREVISTA', { underline: true });
-            doc.moveDown(3);
-            doc.text('_'.repeat(80));
-            doc.moveDown();
-            doc.text('_'.repeat(80));
-            doc.moveDown();
-            doc.text('_'.repeat(80));
+            doc.moveDown(0.5);
+            // Removidas linhas desorganizadas conforme solicitado
 
             doc.end();
         } catch (error) {
