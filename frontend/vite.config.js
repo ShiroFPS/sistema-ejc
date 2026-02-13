@@ -14,4 +14,15 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+                    utils: ['axios', 'zod', 'swr', 'react-hook-form'],
+                    ui: ['react-hot-toast'],
+                },
+            },
+        },
+    },
 })

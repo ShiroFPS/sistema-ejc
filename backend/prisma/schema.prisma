@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -184,6 +184,7 @@ model InscricaoTrabalhador {
   @@index([cpf2])
   @@index([status, createdAt])
   @@index([funcaoTrabalhador, status])
+  @@index([nomeCompleto1])
 }
 
 model Configuracao {
@@ -218,4 +219,15 @@ model Notificacao {
   createdAt     DateTime @default(now())
   
   @@map("notificacoes")
+}
+
+model Arquivo {
+  id           String   @id @default(uuid())
+  nomeOriginal String
+  mimetype     String
+  tamanho      Int
+  dados        Bytes
+  createdAt    DateTime @default(now())
+
+  @@map("arquivos")
 }

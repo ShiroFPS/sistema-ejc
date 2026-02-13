@@ -50,7 +50,6 @@ const EditarParticipante = () => {
         cpf: '',
         email: '',
         receberEmail: true,
-        receberEmail: true,
         receberWhatsapp: true,
         corGrupo: '',
         codigoVerificacao: '',
@@ -125,6 +124,7 @@ const EditarParticipante = () => {
                     });
                     currentFotoUrl = uploadRes.url;
                 } catch (error) {
+                    console.error('Upload error:', error);
                     toast.error('Erro ao enviar foto');
                     setSaving(false);
                     return;
@@ -137,12 +137,14 @@ const EditarParticipante = () => {
                 fotoUrl: currentFotoUrl,
                 contatosEmergencia: JSON.stringify(contatosJson.filter(c => c.nome || c.telefone))
             };
+
             if (!payload.dataNascimento) delete payload.dataNascimento;
 
             await api.put(`/inscricoes/${id}?tipo=PARTICIPANTE`, payload);
             toast.success('Inscrição atualizada!');
             // navigate(`/admin/inscricoes/${id}`);
         } catch (error) {
+            console.error('Save error:', error);
             toast.error('Erro ao salvar');
         } finally {
             setSaving(false);

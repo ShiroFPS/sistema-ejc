@@ -1,4 +1,7 @@
-import cloudinary from '../config/cloudinary.js';
+import { PrismaClient } from '@prisma/client';
+import sharp from 'sharp';
+
+const prisma = new PrismaClient();
 
 export const uploadFoto = async (req, res, next) => {
     try {
@@ -19,25 +22,31 @@ export const uploadFoto = async (req, res, next) => {
             return res.status(400).json({ error: 'Arquivo deve ter no máximo 5MB' });
         }
 
-        // Upload para Cloudinary
-        const result = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
-                {
-                    folder: 'ejc/fotos',
-                    transformation: [
-                        { width: 240, height: 320, crop: 'fill', gravity: 'face' },
-                        { quality: 'auto:eco' }
-                    ],
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            ).end(foto.data);
+        // Processar imagem com Sharp
+        const processedImage = await sharp(foto.data)
+            .resize(240, 320, {
+                fit: 'cover',
+                position: 'top' // Foca no rosto/topo
+            })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+
+        // Salvar no Banco via Prisma
+        const arquivo = await prisma.arquivo.create({
+            data: {
+                nomeOriginal: foto.name,
+                mimetype: 'image/jpeg', // Sempre convertemos para JPEG
+                tamanho: processedImage.length,
+                dados: processedImage
+            }
         });
 
-        res.json({ url: result.secure_url });
+        // Retornar URL para acessar o arquivo
+        const fileUrl = `${req.protocol}://${req.get('host')}/api/upload/file/${arquivo.id}`;
+        res.json({ url: fileUrl });
+
     } catch (error) {
+        console.error('Erro no upload de foto:', error);
         next(error);
     }
 };
@@ -61,22 +70,48 @@ export const uploadComprovante = async (req, res, next) => {
             return res.status(400).json({ error: 'Arquivo deve ter no máximo 10MB' });
         }
 
-        // Upload para Cloudinary
-        const result = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
-                {
-                    folder: 'ejc/comprovantes',
-                    resource_type: 'auto',
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            ).end(comprovante.data);
+        // Salvar no Banco (sem processamento para PDF/Imagens completas)
+        const arquivo = await prisma.arquivo.create({
+            data: {
+                nomeOriginal: comprovante.name,
+                mimetype: comprovante.mimetype,
+                tamanho: comprovante.size,
+                dados: comprovante.data
+            }
         });
 
-        res.json({ url: result.secure_url });
+        const fileUrl = `${req.protocol}://${req.get('host')}/api/upload/file/${arquivo.id}`;
+        res.json({ url: fileUrl });
+
     } catch (error) {
+        console.error('Erro no upload de comprovante:', error);
+        next(error);
+    }
+};
+
+// Nova rota para servir os arquivos
+export const getArquivo = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const arquivo = await prisma.arquivo.findUnique({
+            where: { id }
+        });
+
+        if (!arquivo) {
+            return res.status(404).json({ error: 'Arquivo não encontrado' });
+        }
+
+        // Definir headers corretos
+        res.setHeader('Content-Type', arquivo.mimetype);
+        res.setHeader('Content-Length', arquivo.tamanho);
+        // Cache por 1 dia
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+
+        res.send(arquivo.dados);
+
+    } catch (error) {
+        console.error('Erro ao recuperar arquivo:', error);
         next(error);
     }
 };

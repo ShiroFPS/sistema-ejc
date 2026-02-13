@@ -3,6 +3,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import compression from 'compression';
 import { config } from './config/index.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
@@ -33,6 +34,8 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }, // PERMITIR CARREGAMENTO DE RECURSOS (IMAGENS) DE OUTROS ORIGENS
     crossOriginEmbedderPolicy: false,
 }));
+
+app.use(compression());
 
 // Rate Limiting
 const limiter = rateLimit({
