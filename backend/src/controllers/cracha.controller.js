@@ -143,7 +143,7 @@ const desenharCracha = (doc, inscricao, x, y, fotoBuffer = null) => {
     doc.fontSize(5).fillColor('#6b7280').font('Helvetica-Bold')
         .text('NOME COMPLETO:', vX + margin, vY + mmToPt(20));
     doc.fontSize(6).fillColor('#1f2937').font('Helvetica')
-        .text(inscricao.nomeCompleto || inscricao.nomeCompleto1 || 'Nome Completo', vX + margin, vY + mmToPt(23), { width: dataWidth, height: mmToPt(8), ellipsis: true });
+        .text(inscricao.nomeCompleto || (inscricao.person === 2 ? inscricao.nomeCompleto2 : inscricao.nomeCompleto1) || 'Nome Completo', vX + margin, vY + mmToPt(23), { width: dataWidth, height: mmToPt(8), ellipsis: true });
 
     // Código
     const codeBoxWidth = mmToPt(30);
@@ -168,6 +168,19 @@ const desenharCracha = (doc, inscricao, x, y, fotoBuffer = null) => {
 
     // Borda externa total
     doc.rect(x, y, FULL_WIDTH, CARD_HEIGHT).undash().stroke('#e5e7eb');
+};
+
+const obterDadosPessoa = (inscricao, person = 1) => {
+    if (person === 2 && inscricao.nomeCompleto2) {
+        return {
+            ...inscricao,
+            apelido: inscricao.apelido2 || inscricao.nomeCompleto2.split(' ')[0],
+            nomeCompleto1: inscricao.nomeCompleto2,
+            fotoUrl1: inscricao.fotoUrl2,
+            person: 2
+        };
+    }
+    return { ...inscricao, person: 1 };
 };
 
 // Gerar PDF do crachá individual
@@ -208,8 +221,11 @@ export const gerarCrachaPDF = async (req, res, next) => {
         const startX = (595.28 - FULL_WIDTH) / 2;
         const startY = (841.89 - CARD_HEIGHT) / 2;
 
+        const personNum = parseInt(req.query.person) || 1;
+        const dadosCracha = obterDadosPessoa(inscricao, personNum);
+
         let fotoBuffer = null;
-        const fotoUrl = inscricao.fotoUrl || inscricao.fotoUrl1;
+        const fotoUrl = dadosCracha.fotoUrl || dadosCracha.fotoUrl1;
         if (fotoUrl) {
             try {
                 const res = await axios.get(fotoUrl, { responseType: 'arraybuffer' });
@@ -219,7 +235,7 @@ export const gerarCrachaPDF = async (req, res, next) => {
             }
         }
 
-        desenharCracha(doc, inscricao, startX, startY, fotoBuffer);
+        desenharCracha(doc, dadosCracha, startX, startY, fotoBuffer);
 
         doc.end();
     } catch (error) {

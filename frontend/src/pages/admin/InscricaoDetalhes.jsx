@@ -195,10 +195,29 @@ const InscricaoDetalhes = () => {
                     </Card>
 
                     <div className={styles.mediaSection}>
-                        {inscricao.fotoUrl && (
+                        {(inscricao.fotoUrl || inscricao.fotoUrl1 || inscricao.fotoUrl2) && (
                             <Card>
                                 <h2 className={styles.sectionTitle}>📷 Identificação Visual</h2>
-                                <img src={inscricao.fotoUrl} alt="Foto" className={styles.foto} />
+                                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                    {inscricao.fotoUrl && (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <img src={inscricao.fotoUrl} alt="Foto" className={styles.foto} />
+                                            {isTrabalhador && <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Foto</p>}
+                                        </div>
+                                    )}
+                                    {inscricao.fotoUrl1 && (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <img src={inscricao.fotoUrl1} alt="Foto 1" className={styles.foto} />
+                                            {isTrabalhador && <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Pessoa 1</p>}
+                                        </div>
+                                    )}
+                                    {inscricao.fotoUrl2 && (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <img src={inscricao.fotoUrl2} alt="Foto 2" className={styles.foto} />
+                                            {isTrabalhador && <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Pessoa 2</p>}
+                                        </div>
+                                    )}
+                                </div>
                             </Card>
                         )}
                         {inscricao.comprovanteUrl && (

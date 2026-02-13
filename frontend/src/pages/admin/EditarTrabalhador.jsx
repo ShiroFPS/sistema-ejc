@@ -71,6 +71,7 @@ const EditarTrabalhador = () => {
     const [fotoArquivo2, setFotoArquivo2] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [previewPerson, setPreviewPerson] = useState(1);
 
     useEffect(() => {
         const fetchTrabalhador = async () => {
@@ -225,7 +226,7 @@ const EditarTrabalhador = () => {
 
     const handleImprimirCracha = async () => {
         try {
-            const response = await api.get(`/cracha/gerar/${id}?tipo=trabalhador`, {
+            const response = await api.get(`/cracha/gerar/${id}?tipo=trabalhador&person=${previewPerson}`, {
                 responseType: 'blob',
             });
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -504,12 +505,19 @@ const EditarTrabalhador = () => {
 
                     <Card>
                         <h2 className={styles.sectionTitle}>🎫 Preview</h2>
+                        {isCasal && (
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+                                <Button size="sm" variant={previewPerson === 1 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(1)}>Pessoa 1</Button>
+                                <Button size="sm" variant={previewPerson === 2 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(2)}>Pessoa 2</Button>
+                            </div>
+                        )}
                         <div className={styles.crachaPreview}>
                             <Cracha
                                 inscricao={{ ...trabalhador, ...formData }}
                                 tipo="trabalhador"
                                 lado="frente"
                                 layout="vertical"
+                                person={previewPerson}
                             />
                         </div>
                         <div className={styles.crachaPreview} style={{ marginTop: '20px' }}>
@@ -518,6 +526,7 @@ const EditarTrabalhador = () => {
                                 tipo="trabalhador"
                                 lado="verso"
                                 layout="vertical"
+                                person={previewPerson}
                             />
                         </div>
                     </Card>

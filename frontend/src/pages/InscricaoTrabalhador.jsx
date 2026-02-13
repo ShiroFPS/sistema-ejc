@@ -14,6 +14,8 @@ const InscricaoTrabalhador = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
     const [loading, setLoading] = useState(false);
     const [config, setConfig] = useState(null);
+    const [fotoPreview1, setFotoPreview1] = useState(null);
+    const [fotoPreview2, setFotoPreview2] = useState(null);
 
     useEffect(() => {
         api.get('/config').then(({ data }) => setConfig(data));
@@ -23,9 +25,42 @@ const InscricaoTrabalhador = () => {
     const trabalhamOuEstudam = watch('trabalhamOuEstudam');
     const tocaInstrumento = watch('tocaInstrumento');
 
+    const uploadFile = async (file, type) => {
+        const formData = new FormData();
+        formData.append('foto', file); // O backend espera o campo 'foto' em uploadFoto
+        try {
+            const { data } = await api.post('/upload/foto', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            return data.url;
+        } catch (error) {
+            toast.error(`Erro ao enviar foto`);
+            return null;
+        }
+    };
+
+    const handleFotoChange = (num) => (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (num === 1) setFotoPreview1(URL.createObjectURL(file));
+            else setFotoPreview2(URL.createObjectURL(file));
+        }
+    };
+
     const onSubmit = async (data) => {
         setLoading(true);
         try {
+            let currentFotoUrl1 = null;
+            let currentFotoUrl2 = null;
+
+            if (data.foto1?.[0]) {
+                currentFotoUrl1 = await uploadFile(data.foto1[0], 'foto1');
+            }
+
+            if (data.foto2?.[0]) {
+                currentFotoUrl2 = await uploadFile(data.foto2[0], 'foto2');
+            }
+
             const inscricaoData = {
                 ...data,
                 trabalhamOuEstudam: data.trabalhamOuEstudam === 'sim',
@@ -36,6 +71,8 @@ const InscricaoTrabalhador = () => {
                 trabalhosManuais: data.trabalhosManuais === 'sim',
                 cpf1: data.cpf1?.replace(/\D/g, ''),
                 cpf2: data.cpf2?.replace(/\D/g, ''),
+                fotoUrl1: currentFotoUrl1,
+                fotoUrl2: currentFotoUrl2,
             };
 
             await api.post('/inscricoes/trabalhadores', inscricaoData);
@@ -135,6 +172,23 @@ const InscricaoTrabalhador = () => {
                                         <Input label="Instagram (Pessoa 1)" {...register('instagram1')} />
                                         <Input label="Apelido para o Crachá 1" {...register('apelido', { required: true })} />
                                         <Input label="Profissão (Pessoa 1)" {...register('profissao1', { required: true })} />
+                                        <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+                                            <label className={styles.label}>Foto 3x4 (Pessoa 1) *</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                {fotoPreview1 && (
+                                                    <img src={fotoPreview1} alt="Preview" style={{ width: '60px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    {...register('foto1', { required: 'Foto é obrigatória' })}
+                                                    onChange={(e) => {
+                                                        register('foto1').onChange(e);
+                                                        handleFotoChange(1)(e);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' && (
@@ -154,6 +208,23 @@ const InscricaoTrabalhador = () => {
                                             <Input label="Instagram (Pessoa 2)" {...register('instagram2')} />
                                             <Input label="Apelido para o Crachá 2" {...register('apelido2', { required: true })} />
                                             <Input label="Profissão (Pessoa 2)" {...register('profissao2', { required: true })} />
+                                            <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+                                                <label className={styles.label}>Foto 3x4 (Pessoa 2) *</label>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                    {fotoPreview2 && (
+                                                        <img src={fotoPreview2} alt="Preview" style={{ width: '60px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                    )}
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        {...register('foto2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })}
+                                                        onChange={(e) => {
+                                                            register('foto2').onChange(e);
+                                                            handleFotoChange(2)(e);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </Card>

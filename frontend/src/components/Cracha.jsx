@@ -2,14 +2,18 @@ import React from 'react';
 import styles from './Cracha.module.css';
 import logoEjc from '../assets/logo-ejc.jpg';
 
-const Cracha = ({ inscricao, tipo, lado = 'frente', layout = 'vertical' }) => {
+const Cracha = ({ inscricao, tipo, lado = 'frente', layout = 'vertical', person = 1 }) => {
     const nome = tipo === 'trabalhador'
-        ? (inscricao.apelido || inscricao.nomeCompleto1)
+        ? (person === 1 ? (inscricao.apelido || inscricao.nomeCompleto1) : (inscricao.apelido2 || inscricao.nomeCompleto2))
         : inscricao.apelido;
 
     const nomeCompleto = tipo === 'trabalhador'
-        ? inscricao.nomeCompleto1
+        ? (person === 1 ? inscricao.nomeCompleto1 : inscricao.nomeCompleto2)
         : inscricao.nomeCompleto;
+
+    const fotoUrl = tipo === 'trabalhador'
+        ? (person === 1 ? (inscricao.fotoUrl1 || inscricao.fotoUrl) : inscricao.fotoUrl2)
+        : inscricao.fotoUrl;
 
     const corFaixa = {
         'VERDE': '#22c55e',
@@ -40,6 +44,11 @@ const Cracha = ({ inscricao, tipo, lado = 'frente', layout = 'vertical' }) => {
                         {inscricao.funcaoTrabalhador && (
                             <div className={styles.funcaoBox}>
                                 <p className={styles.funcao}>{inscricao.funcaoTrabalhador}</p>
+                            </div>
+                        )}
+                        {fotoUrl && (
+                            <div className={styles.fotoBox}>
+                                <img src={fotoUrl} alt="Foto" className={styles.fotoCracha} style={{ borderColor: corFaixa }} />
                             </div>
                         )}
                     </div>
