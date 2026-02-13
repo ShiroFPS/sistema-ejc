@@ -62,8 +62,13 @@ const EditarTrabalhador = () => {
         cpf2: '',
         receberEmail: true,
         receberWhatsapp: true,
-        fotoUrl1: '',
         fotoUrl2: '',
+        escolaridade1: '',
+        escolaridade2: '',
+        localTrabalho1: '',
+        localTrabalho2: '',
+        instituicaoEnsino1: '',
+        instituicaoEnsino2: '',
     });
     const [fotoPreview1, setFotoPreview1] = useState(null);
     const [fotoArquivo1, setFotoArquivo1] = useState(null);
@@ -112,6 +117,12 @@ const EditarTrabalhador = () => {
                     receberWhatsapp: d.receberWhatsapp !== undefined ? d.receberWhatsapp : true,
                     fotoUrl1: d.fotoUrl1 || '',
                     fotoUrl2: d.fotoUrl2 || '',
+                    escolaridade1: d.escolaridade1 || '',
+                    escolaridade2: d.escolaridade2 || '',
+                    localTrabalho1: d.localTrabalho1 || '',
+                    localTrabalho2: d.localTrabalho2 || '',
+                    instituicaoEnsino1: d.instituicaoEnsino1 || '',
+                    instituicaoEnsino2: d.instituicaoEnsino2 || '',
                 });
                 if (d.fotoUrl1) setFotoPreview1(d.fotoUrl1);
                 if (d.fotoUrl2) setFotoPreview2(d.fotoUrl2);
@@ -318,6 +329,30 @@ const EditarTrabalhador = () => {
                                 <label>CPF 1</label>
                                 <input name="cpf1" value={formData.cpf1} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
                             </div>
+                            <div className={styles.formGroup}>
+                                <label>Escolaridade 1</label>
+                                <select name="escolaridade1" value={formData.escolaridade1} onChange={handleChange} className={styles.select}>
+                                    <option value="">Selecione...</option>
+                                    <option value="Ensino fundamental completo">Ensino fundamental completo</option>
+                                    <option value="Ensino médio incompleto">Ensino médio incompleto</option>
+                                    <option value="Ensino médio completo">Ensino médio completo</option>
+                                    <option value="Ensino superior incompleto">Ensino superior incompleto</option>
+                                    <option value="Ensino superior completo">Ensino superior completo</option>
+                                    <option value="Pós - graduado(a)">Pós - graduado(a)</option>
+                                </select>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Instituição 1</label>
+                                <input name="instituicaoEnsino1" value={formData.instituicaoEnsino1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Local Trabalho 1</label>
+                                <input name="localTrabalho1" value={formData.localTrabalho1} onChange={handleChange} className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Profissão 1</label>
+                                <input name="profissao1" value={formData.profissao1} onChange={handleChange} className={styles.input} />
+                            </div>
                             <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
                                 <label>Foto Pessoa 1</label>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
@@ -373,6 +408,30 @@ const EditarTrabalhador = () => {
                                     <label>CPF 2</label>
                                     <input name="cpf2" value={formData.cpf2} onChange={handleChange} className={styles.input} placeholder="000.000.000-00" />
                                 </div>
+                                <div className={styles.formGroup}>
+                                    <label>Escolaridade 2</label>
+                                    <select name="escolaridade2" value={formData.escolaridade2} onChange={handleChange} className={styles.select}>
+                                        <option value="">Selecione...</option>
+                                        <option value="Ensino fundamental completo">Ensino fundamental completo</option>
+                                        <option value="Ensino médio incompleto">Ensino médio incompleto</option>
+                                        <option value="Ensino médio completo">Ensino médio completo</option>
+                                        <option value="Ensino superior incompleto">Ensino superior incompleto</option>
+                                        <option value="Ensino superior completo">Ensino superior completo</option>
+                                        <option value="Pós - graduado(a)">Pós - graduado(a)</option>
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Instituição 2</label>
+                                    <input name="instituicaoEnsino2" value={formData.instituicaoEnsino2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Local Trabalho 2</label>
+                                    <input name="localTrabalho2" value={formData.localTrabalho2} onChange={handleChange} className={styles.input} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Profissão 2</label>
+                                    <input name="profissao2" value={formData.profissao2} onChange={handleChange} className={styles.input} />
+                                </div>
                                 <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
                                     <label>Foto Pessoa 2</label>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
@@ -421,10 +480,6 @@ const EditarTrabalhador = () => {
                     <Card>
                         <h2 className={styles.sectionTitle}>🛠️ Experiência e Habilidades</h2>
                         <div className={styles.formGrid}>
-                            <div className={styles.formGroup}>
-                                <label>Paróquia e Ano EJC</label>
-                                <input name="paroquiaEjcAno" value={formData.paroquiaEjcAno} onChange={handleChange} className={styles.input} />
-                            </div>
                             <div className={styles.formGroup}>
                                 <label>Equipes que já serviu (Histórico)</label>
                                 <textarea
@@ -484,65 +539,65 @@ const EditarTrabalhador = () => {
                         </div>
                     </Card>
                 </div>
-
-                <div className={styles.rightCol}>
-                    <Card>
-                        <h2 className={styles.sectionTitle}>🎨 Configuração Crachá</h2>
-                        <div className={styles.formGroup}>
-                            <label>Cor do Crachá *</label>
-                            <select name="corCracha" value={formData.corCracha} onChange={handleChange} className={styles.select}>
-                                <option value="">Selecione uma cor</option>
-                                <option value="VERDE">🟢 Verde</option>
-                                <option value="AMARELO">🟡 Amarelo</option>
-                                <option value="VERMELHO">🔴 Vermelho</option>
-                            </select>
-                        </div>
-
-                        <Button onClick={handleSalvar} disabled={saving} fullWidth>
-                            {saving ? 'Salvando...' : '💾 Salvar Todas Alterações'}
-                        </Button>
-                    </Card>
-
-                    <Card>
-                        <h2 className={styles.sectionTitle}>🎫 Preview</h2>
-                        {isCasal && (
-                            <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
-                                <Button size="sm" variant={previewPerson === 1 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(1)}>Pessoa 1</Button>
-                                <Button size="sm" variant={previewPerson === 2 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(2)}>Pessoa 2</Button>
-                            </div>
-                        )}
-                        <div className={styles.crachaPreview}>
-                            <Cracha
-                                inscricao={{
-                                    ...trabalhador,
-                                    ...formData,
-                                    fotoUrl1: fotoPreview1 || formData.fotoUrl1,
-                                    fotoUrl2: fotoPreview2 || formData.fotoUrl2
-                                }}
-                                tipo="trabalhador"
-                                lado="frente"
-                                layout="vertical"
-                                person={previewPerson}
-                            />
-                        </div>
-                        <div className={styles.crachaPreview} style={{ marginTop: '20px' }}>
-                            <Cracha
-                                inscricao={{
-                                    ...trabalhador,
-                                    ...formData,
-                                    fotoUrl1: fotoPreview1 || formData.fotoUrl1,
-                                    fotoUrl2: fotoPreview2 || formData.fotoUrl2
-                                }}
-                                tipo="trabalhador"
-                                lado="verso"
-                                layout="vertical"
-                                person={previewPerson}
-                            />
-                        </div>
-                    </Card>
-                </div>
             </div >
-        </div >
+
+            <div className={styles.rightCol}>
+                <Card>
+                    <h2 className={styles.sectionTitle}>🎨 Configuração Crachá</h2>
+                    <div className={styles.formGroup}>
+                        <label>Cor do Crachá *</label>
+                        <select name="corCracha" value={formData.corCracha} onChange={handleChange} className={styles.select}>
+                            <option value="">Selecione uma cor</option>
+                            <option value="VERDE">🟢 Verde</option>
+                            <option value="AMARELO">🟡 Amarelo</option>
+                            <option value="VERMELHO">🔴 Vermelho</option>
+                        </select>
+                    </div>
+
+                    <Button onClick={handleSalvar} disabled={saving} fullWidth>
+                        {saving ? 'Salvando...' : '💾 Salvar Todas Alterações'}
+                    </Button>
+                </Card>
+
+                <Card>
+                    <h2 className={styles.sectionTitle}>🎫 Preview</h2>
+                    {isCasal && (
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+                            <Button size="sm" variant={previewPerson === 1 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(1)}>Pessoa 1</Button>
+                            <Button size="sm" variant={previewPerson === 2 ? 'primary' : 'ghost'} onClick={() => setPreviewPerson(2)}>Pessoa 2</Button>
+                        </div>
+                    )}
+                    <div className={styles.crachaPreview}>
+                        <Cracha
+                            inscricao={{
+                                ...trabalhador,
+                                ...formData,
+                                fotoUrl1: fotoPreview1 || formData.fotoUrl1,
+                                fotoUrl2: fotoPreview2 || formData.fotoUrl2
+                            }}
+                            tipo="trabalhador"
+                            lado="frente"
+                            layout="vertical"
+                            person={previewPerson}
+                        />
+                    </div>
+                    <div className={styles.crachaPreview} style={{ marginTop: '20px' }}>
+                        <Cracha
+                            inscricao={{
+                                ...trabalhador,
+                                ...formData,
+                                fotoUrl1: fotoPreview1 || formData.fotoUrl1,
+                                fotoUrl2: fotoPreview2 || formData.fotoUrl2
+                            }}
+                            tipo="trabalhador"
+                            lado="verso"
+                            layout="vertical"
+                            person={previewPerson}
+                        />
+                    </div>
+                </Card>
+            </div>
+        </div>
     );
 };
 

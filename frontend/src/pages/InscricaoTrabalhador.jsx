@@ -171,7 +171,35 @@ const InscricaoTrabalhador = () => {
                                         <Input label="Data Nascimento (Pessoa 1)" type="date" {...register('dataNascimento1', { required: true })} />
                                         <Input label="Instagram (Pessoa 1)" {...register('instagram1')} />
                                         <Input label="Apelido para o Crachá 1" {...register('apelido', { required: true })} />
-                                        <Input label="Profissão (Pessoa 1)" {...register('profissao1', { required: true })} />
+                                        <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+                                            <label className={styles.label}>Grau de Escolaridade (Pessoa 1) *</label>
+                                            <div className={styles.radioGroup} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                                {[
+                                                    'Ensino fundamental completo',
+                                                    'Ensino médio incompleto',
+                                                    'Ensino médio completo',
+                                                    'Ensino superior incompleto',
+                                                    'Ensino superior completo',
+                                                    'Pós - graduado(a)'
+                                                ].map(opcao => (
+                                                    <label key={opcao} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                                        <input type="radio" value={opcao} {...register('escolaridade1', { required: 'Obrigatório' })} />
+                                                        <span style={{ fontSize: '0.9rem' }}>{opcao}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <Input label="Instituição/Curso (Pessoa 1)" {...register('instituicaoEnsino1', { required: true })} />
+                                        <div className={styles.inputGroup}>
+                                            <label className={styles.label}>Trabalha ou Estuda? (Pessoa 1) *</label>
+                                            <select {...register('trabalhoEstudoStatus1', { required: true })} className={styles.select}>
+                                                <option value="">Selecione...</option>
+                                                <option value="sim">Sim</option>
+                                                <option value="nao">Não</option>
+                                            </select>
+                                        </div>
+                                        <Input label="Profissão / Área de Atuação (Pessoa 1)" {...register('profissao1', { required: true })} />
+                                        <Input label="Onde trabalha/estuda? (Pessoa 1)" {...register('localTrabalho1', { required: true })} />
                                         <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
                                             <label className={styles.label}>Foto 3x4 (Pessoa 1) *</label>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -207,7 +235,35 @@ const InscricaoTrabalhador = () => {
                                             <Input label="Data Nascimento (Pessoa 2)" type="date" {...register('dataNascimento2', { required: true })} />
                                             <Input label="Instagram (Pessoa 2)" {...register('instagram2')} />
                                             <Input label="Apelido para o Crachá 2" {...register('apelido2', { required: true })} />
-                                            <Input label="Profissão (Pessoa 2)" {...register('profissao2', { required: true })} />
+                                            <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
+                                                <label className={styles.label}>Grau de Escolaridade (Pessoa 2) *</label>
+                                                <div className={styles.radioGroup} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                                    {[
+                                                        'Ensino fundamental completo',
+                                                        'Ensino médio incompleto',
+                                                        'Ensino médio completo',
+                                                        'Ensino superior incompleto',
+                                                        'Ensino superior completo',
+                                                        'Pós - graduado(a)'
+                                                    ].map(opcao => (
+                                                        <label key={opcao} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                                            <input type="radio" value={opcao} {...register('escolaridade2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })} />
+                                                            <span style={{ fontSize: '0.9rem' }}>{opcao}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <Input label="Instituição/Curso (Pessoa 2)" {...register('instituicaoEnsino2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })} />
+                                            <div className={styles.inputGroup}>
+                                                <label className={styles.label}>Trabalha ou Estuda? (Pessoa 2) *</label>
+                                                <select {...register('trabalhoEstudoStatus2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })} className={styles.select}>
+                                                    <option value="">Selecione...</option>
+                                                    <option value="sim">Sim</option>
+                                                    <option value="nao">Não</option>
+                                                </select>
+                                            </div>
+                                            <Input label="Profissão / Área de Atuação (Pessoa 2)" {...register('profissao2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })} />
+                                            <Input label="Onde trabalha/estuda? (Pessoa 2)" {...register('localTrabalho2', { required: tipoInscricao === 'CASAIS_UNIAO_ESTAVEL' })} />
                                             <div className={styles.inputGroup} style={{ gridColumn: '1 / -1' }}>
                                                 <label className={styles.label}>Foto 3x4 (Pessoa 2) *</label>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -235,7 +291,6 @@ const InscricaoTrabalhador = () => {
                     <Card>
                         <h2 className={styles.sectionTitle}>✝️ Caminhada no EJC</h2>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                            <Input label="Paróquia de Origem e Ano que fez o Encontro" {...register('paroquiaEjcAno', { required: true })} placeholder="Ex: Auxiliadora - 2018" />
                             <div className={styles.inputGroup}>
                                 <label className={styles.label}>Em quais equipes você já serviu?</label>
                                 <textarea {...register('equipesJaServiram', { required: true })} className={styles.textarea} placeholder="Cite as equipes/círculos..." />

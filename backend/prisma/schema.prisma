@@ -153,11 +153,16 @@ model InscricaoTrabalhador {
   // Trabalho/Estudo
   trabalhamOuEstudam    Boolean  @default(false)
   areaTrabalhoEstudo    String?
-  profissao1            String?  // Nova solicitação
-  profissao2            String?  // Nova solicitação (para casais)
+  profissao1            String?
+  profissao2            String?
+  escolaridade1         String?
+  escolaridade2         String?
+  localTrabalho1        String?
+  localTrabalho2        String?
+  instituicaoEnsino1    String?
+  instituicaoEnsino2    String?
   
   // Experiência EJC
-  paroquiaEjcAno        String   // Ex: "Paróquia Auxiliadora - 2019"
   equipesJaServiram     String   // Ex: "Vermelho, Verde"
   
   // Habilidades

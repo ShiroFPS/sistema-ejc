@@ -142,6 +142,15 @@ const InscricaoDetalhes = () => {
                             {renderField('CPF', isTrabalhador ? inscricao.cpf1 : inscricao.cpf)}
                             {renderField('WhatsApp', isTrabalhador ? inscricao.contato1 : inscricao.telefone)}
                             {renderField('Email', inscricao.email)}
+                            {isTrabalhador && (
+                                <>
+                                    {renderField('Escolaridade', inscricao.escolaridade1)}
+                                    {renderField('Instituição/Curso', inscricao.instituicaoEnsino1)}
+                                    {renderField('Onde trabalha/estuda', inscricao.localTrabalho1)}
+                                    {renderField('Profissão', inscricao.profissao1)}
+                                </>
+                            )}
+                            {!isTrabalhador && renderField('Profissão', inscricao.profissao)}
                         </div>
                     </Card>
 
@@ -155,6 +164,10 @@ const InscricaoDetalhes = () => {
                                 {renderField('Sexo', inscricao.sexo2)}
                                 {renderField('CPF', inscricao.cpf2)}
                                 {renderField('WhatsApp', inscricao.contato2)}
+                                {renderField('Escolaridade', inscricao.escolaridade2)}
+                                {renderField('Instituição/Curso', inscricao.instituicaoEnsino2)}
+                                {renderField('Onde trabalha/estuda', inscricao.localTrabalho2)}
+                                {renderField('Profissão', inscricao.profissao2)}
                             </div>
                         </Card>
                     )}
@@ -230,8 +243,8 @@ const InscricaoDetalhes = () => {
                         )}
                     </div>
                 </div>
-            </motion.div>
-        </div>
+            </motion.div >
+        </div >
     );
 };
 
