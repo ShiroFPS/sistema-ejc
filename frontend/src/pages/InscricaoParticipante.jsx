@@ -138,7 +138,42 @@ const InscricaoParticipante = () => {
                             <Input label="Endereço Completo" {...register('enderecoCompleto', { required: true })} />
                             <Input label="Bairro" {...register('bairro', { required: true })} />
                             <Input label="Mora com quem?" {...register('moraComQuem', { required: true })} />
-                            <Input label="Profissão" {...register('profissao', { required: true })} />
+                        </div>
+
+                        <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Grau de Escolaridade *</label>
+                                <div className={styles.radioGroup} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                    {[
+                                        'Ensino fundamental completo',
+                                        'Ensino médio incompleto',
+                                        'Ensino médio completo',
+                                        'Ensino superior incompleto',
+                                        'Ensino superior completo',
+                                        'Pós - graduado(a)'
+                                    ].map(opcao => (
+                                        <label key={opcao} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                            <input type="radio" value={opcao} {...register('escolaridade', { required: 'Obrigatório' })} />
+                                            <span>{opcao}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                {errors.escolaridade && <span className={styles.error}>{errors.escolaridade.message}</span>}
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Instituição de ensino e curso (atual ou concluído) *</label>
+                                <p className={styles.helpText} style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Exemplo: Psicologia - UFPB.</p>
+                                <textarea {...register('instituicaoEnsino', { required: true })} className={styles.textarea} style={{ minHeight: '60px' }} />
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Você trabalha? Se sim, onde? *</label>
+                                <p className={styles.helpText} style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Exemplo: Sim, Atendimento Clinico em João Pessoa.</p>
+                                <input {...register('localTrabalho', { required: true })} className={styles.input} />
+                            </div>
+
+                            <Input label="Profissão / Sua área" {...register('profissao', { required: true })} />
                         </div>
                     </Card>
 

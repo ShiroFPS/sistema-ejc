@@ -435,6 +435,28 @@ const EditarParticipante = () => {
                 </div>
             </div>
 
+            <Card style={{ marginTop: '20px' }}>
+                <h2 className={styles.sectionTitle}>🎫 Preview Crachá</h2>
+                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <div className={styles.crachaPreview}>
+                        <Cracha
+                            inscricao={{ ...formData, fotoUrl: fotoPreview || formData.fotoUrl }}
+                            tipo="participante"
+                            lado="frente"
+                            layout="vertical"
+                        />
+                    </div>
+                    <div className={styles.crachaPreview}>
+                        <Cracha
+                            inscricao={{ ...formData, fotoUrl: fotoPreview || formData.fotoUrl }}
+                            tipo="participante"
+                            lado="verso"
+                            layout="vertical"
+                        />
+                    </div>
+                </div>
+            </Card>
+
             <div className={styles.actions} style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                 <Button onClick={() => navigate(`/admin/inscricoes/${id}`)} variant="ghost">Cancelar</Button>
                 <Button onClick={handleSalvar} disabled={saving}>{saving ? 'Salvando...' : '💾 Salvar Alterações'}</Button>

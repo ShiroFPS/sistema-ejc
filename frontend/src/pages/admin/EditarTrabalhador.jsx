@@ -513,7 +513,12 @@ const EditarTrabalhador = () => {
                         )}
                         <div className={styles.crachaPreview}>
                             <Cracha
-                                inscricao={{ ...trabalhador, ...formData }}
+                                inscricao={{
+                                    ...trabalhador,
+                                    ...formData,
+                                    fotoUrl1: fotoPreview1 || formData.fotoUrl1,
+                                    fotoUrl2: fotoPreview2 || formData.fotoUrl2
+                                }}
                                 tipo="trabalhador"
                                 lado="frente"
                                 layout="vertical"
@@ -522,7 +527,12 @@ const EditarTrabalhador = () => {
                         </div>
                         <div className={styles.crachaPreview} style={{ marginTop: '20px' }}>
                             <Cracha
-                                inscricao={{ ...trabalhador, ...formData }}
+                                inscricao={{
+                                    ...trabalhador,
+                                    ...formData,
+                                    fotoUrl1: fotoPreview1 || formData.fotoUrl1,
+                                    fotoUrl2: fotoPreview2 || formData.fotoUrl2
+                                }}
                                 tipo="trabalhador"
                                 lado="verso"
                                 layout="vertical"
