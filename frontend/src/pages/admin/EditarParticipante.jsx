@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../../services/api';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
+import Cracha from '../../components/Cracha';
 import styles from './EditarTrabalhador.module.css'; // Reusing styles
 
 const EditarParticipante = () => {
