@@ -148,7 +148,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
                 try {
                     const contatos = JSON.parse(inscricao.contatosEmergencia);
                     if (contatos.length > 0) {
-                        addSection('CONTATOS DE EMERGÊNCIA');
+                        addSection('CONTATOS EXTRAS');
                         contatos.forEach((c, idx) => {
                             if (c.nome && c.telefone) {
                                 doc.text(`${idx + 1}. ${c.nome} - Tel: ${c.telefone}`);
