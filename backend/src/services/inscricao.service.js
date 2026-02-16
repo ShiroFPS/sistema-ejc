@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { sendWelcomeEmail } from './email.service.js';
+import { generateShortCode } from '../utils/helpers.js';
 
 const prisma = new PrismaClient();
 
@@ -43,6 +44,7 @@ export class InscricaoService {
         const inscricao = await prisma.inscricaoParticipante.create({
             data: {
                 ...dados,
+                codigoVerificacao: generateShortCode(8),
                 status: dados.status || 'PENDENTE',
             },
         });
@@ -72,6 +74,7 @@ export class InscricaoService {
         const inscricao = await prisma.inscricaoTrabalhador.create({
             data: {
                 ...finalData,
+                codigoVerificacao: generateShortCode(8),
                 status: finalData.status || 'PENDENTE',
             },
         });

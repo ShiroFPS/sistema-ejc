@@ -14,6 +14,20 @@ export const sanitizeQuery = (query) => {
 };
 
 /**
+ * Gera um código alfanumérico aleatório curto
+ * @param {number} length - Tamanho do código
+ * @returns {string} Código gerado
+ */
+export const generateShortCode = (length = 8) => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+};
+
+/**
  * Wrapper para async handlers que captura erros automaticamente
  * @param {Function} fn - Função async do controller
  * @returns {Function} Middleware que captura erros

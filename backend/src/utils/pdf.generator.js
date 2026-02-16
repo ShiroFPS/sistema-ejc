@@ -57,7 +57,7 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             // Helper para adicionar campo
             const addField = (label, value) => {
                 if (value) {
-                    doc.text(`${label}: ${value}`);
+                    doc.text(`${label}: ${value}`, { width: 380 });
                 }
             };
 
@@ -90,14 +90,14 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             const codeY = doc.y;
             addField('Código', inscricao.codigoVerificacao);
 
-            // QR Code ao lado direito
+            // QR Code abaixo da foto (foto em X=450, Y=130, height=120 -> Y=250)
             try {
                 const qrBuffer = await QRCode.toBuffer(inscricao.codigoVerificacao, {
                     type: 'png',
                     width: 200,
                     margin: 1
                 });
-                doc.image(qrBuffer, 420, codeY - 10, { width: 80, height: 80 });
+                doc.image(qrBuffer, 455, 255, { width: 80, height: 80 });
             } catch (err) {
                 console.error('Erro ao gerar QR:', err);
             }
