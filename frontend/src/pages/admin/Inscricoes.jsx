@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,33 +11,24 @@ import styles from './Inscricoes.module.css';
 
 const Inscricoes = () => {
     const navigate = useNavigate();
-    const [inscricoes, setInscricoes] = useState([]);
     const [filtros, setFiltros] = useState({ tipo: '', status: '', grupoFuncional: '', funcaoTrabalhador: '', corGrupo: '' });
     const [busca, setBusca] = useState('');
 
-    // Configuração do URL para SWR
-    const getKey = () => {
-        const params = new URLSearchParams({ ...filtros, limit: 100 });
+    // Chave reativa para SWR — muda sempre que filtros ou busca mudam
+    const swrKey = (() => {
+        const params = new URLSearchParams({ ...filtros, limit: 200 });
         if (busca.trim()) params.append('query', busca);
         return busca.trim() ? `/inscricoes/buscar?${params.toString()}` : `/inscricoes?${params.toString()}`;
-    };
+    })();
 
-    const { data, error, mutate, isLoading } = useSWR(getKey(), fetcher, {
-        keepPreviousData: true, // Mantém dados antigos enquanto carrega novos (sensação de fluidez)
-        revalidateOnFocus: false, // Evita recarregar ao trocar de aba (opcional)
+    const { data, error, mutate, isLoading } = useSWR(swrKey, fetcher, {
+        keepPreviousData: true,
+        revalidateOnFocus: false,
     });
 
-    useEffect(() => {
-        if (data?.inscricoes) {
-            setInscricoes(data.inscricoes);
-        }
-    }, [data]);
+    const inscricoes = data?.inscricoes ?? [];
 
-    const handleBusca = () => {
-        // SWR reage automaticamente à mudança no estado 'busca' se incluído na key
-        // Mas como 'busca' está no estado, precisamos garantir que o SWR atualize.
-        // A função getKey já usa 'busca'.
-    };
+    const handleBusca = () => { /* SWR reage automaticamente via swrKey */ };
 
     const handleAprovar = async (id, tipo) => {
         try {
@@ -80,7 +71,7 @@ const Inscricoes = () => {
                 <div className={styles.header}>
                     <div>
                         <h1 className={styles.title}>Gerenciar Inscrições</h1>
-                        <p className={styles.subtitle}>{inscricoes.length} registros no sistema</p>
+                        <p className={styles.subtitle}>{data?.total ?? inscricoes.length} registros no sistema</p>
                     </div>
                     <div className={styles.headerActions}>
                         <Button onClick={() => navigate('/admin/dashboard')} variant="ghost">
