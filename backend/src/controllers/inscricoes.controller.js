@@ -1,6 +1,7 @@
 import { InscricaoService } from '../services/inscricao.service.js';
 import { participanteSchema } from '../schemas/inscricao.schema.js';
 import { prisma } from '../utils/prisma.js';
+import { deleteAssociatedFiles } from '../utils/cleanup.js';
 
 // Criar inscrição (participante)
 export const criar = async (req, res, next) => {
@@ -97,6 +98,19 @@ export const listar = async (req, res, next) => {
                 skip: !tipo ? skip : 0,
                 take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
                 orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    nomeCompleto: true,
+                    apelido: true,
+                    telefone: true,
+                    status: true,
+                    tipoInscricao: false, // Não existe em participante
+                    corGrupo: true,
+                    createdAt: true,
+                    // Adicionar campos necessários para filtros ou lógica futura se precisar
+                    email: true,
+                    cpf: true
+                }
             });
             inscricoes = [...inscricoes, ...participantes.map(p => ({ ...p, tipo: 'PARTICIPANTE' }))];
             total += await prisma.inscricaoParticipante.count({ where: status ? { status } : {} });
@@ -111,7 +125,24 @@ export const listar = async (req, res, next) => {
                 where: trabalhadoresWhere,
                 skip: !tipo ? skip : 0,
                 take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
+                take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
                 orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    nomeCompleto1: true,
+                    nomeCompleto2: true,
+                    apelido: true, // Apelido do crachá
+                    contato1: true,
+                    status: true,
+                    grupoFuncional: true,
+                    funcaoTrabalhador: true,
+                    corCracha: true,
+                    tipoInscricao: true,
+                    createdAt: true,
+                    email: true,
+                    cpf1: true,
+                    cpf2: true
+                }
             });
             inscricoes = [...inscricoes, ...trabalhadores.map(t => ({
                 ...t,
@@ -270,11 +301,31 @@ export const atualizar = async (req, res, next) => {
             if (data.dataNascimento1 && typeof data.dataNascimento1 === 'string') data.dataNascimento1 = new Date(data.dataNascimento1);
             if (data.dataNascimento2 && typeof data.dataNascimento2 === 'string') data.dataNascimento2 = new Date(data.dataNascimento2);
 
+            // Verificar se houve alteração de arquivos para limpeza
+            const current = await prisma.inscricaoTrabalhador.findUnique({ where: { id }, select: { fotoUrl1: true, fotoUrl2: true } });
+
+            if (data.fotoUrl1 && current.fotoUrl1 && data.fotoUrl1 !== current.fotoUrl1) {
+                await deleteAssociatedFiles([current.fotoUrl1]);
+            }
+            if (data.fotoUrl2 && current.fotoUrl2 && data.fotoUrl2 !== current.fotoUrl2) {
+                await deleteAssociatedFiles([current.fotoUrl2]);
+            }
+
             inscricao = await prisma.inscricaoTrabalhador.update({
                 where: { id },
                 data: data,
             });
         } else {
+            // Verificar se houve alteração de arquivos para limpeza
+            const current = await prisma.inscricaoParticipante.findUnique({ where: { id }, select: { fotoUrl: true, comprovanteUrl: true } });
+
+            if (data.fotoUrl && current.fotoUrl && data.fotoUrl !== current.fotoUrl) {
+                await deleteAssociatedFiles([current.fotoUrl]);
+            }
+            if (data.comprovanteUrl && current.comprovanteUrl && data.comprovanteUrl !== current.comprovanteUrl) {
+                await deleteAssociatedFiles([current.comprovanteUrl]);
+            }
+
             inscricao = await prisma.inscricaoParticipante.update({
                 where: { id },
                 data: data,
@@ -352,17 +403,33 @@ export const excluir = async (req, res, next) => {
 
         let deleted;
         // Tenta excluir baseado no tipo, ou tenta ambos se não informado (embora o ideal seja informar)
+        // Tenta excluir baseado no tipo, ou tenta ambos se não informado
         if (tipo === 'TRABALHADOR') {
-            deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+            const t = await prisma.inscricaoTrabalhador.findUnique({ where: { id } });
+            if (t) {
+                // Limpar arquivos
+                await deleteAssociatedFiles([t.fotoUrl1, t.fotoUrl2]);
+                deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+            }
         } else if (tipo === 'PARTICIPANTE') {
-            deleted = await prisma.inscricaoParticipante.delete({ where: { id } });
-        } else {
-            // Tenta encontrar e excluir
             const p = await prisma.inscricaoParticipante.findUnique({ where: { id } });
             if (p) {
+                // Limpar arquivos
+                await deleteAssociatedFiles([p.fotoUrl, p.comprovanteUrl]);
+                deleted = await prisma.inscricaoParticipante.delete({ where: { id } });
+            }
+        } else {
+            // Tenta encontrar e excluir genericamente
+            const p = await prisma.inscricaoParticipante.findUnique({ where: { id } });
+            if (p) {
+                await deleteAssociatedFiles([p.fotoUrl, p.comprovanteUrl]);
                 deleted = await prisma.inscricaoParticipante.delete({ where: { id } });
             } else {
-                deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+                const t = await prisma.inscricaoTrabalhador.findUnique({ where: { id } });
+                if (t) {
+                    await deleteAssociatedFiles([t.fotoUrl1, t.fotoUrl2]);
+                    deleted = await prisma.inscricaoTrabalhador.delete({ where: { id } });
+                }
             }
         }
 

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '../../services/api';
+import useSWR from 'swr';
+
+import api, { fetcher } from '../../services/api';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
 import styles from './Inscricoes.module.css';
@@ -12,41 +14,36 @@ const Inscricoes = () => {
     const [inscricoes, setInscricoes] = useState([]);
     const [filtros, setFiltros] = useState({ tipo: '', status: '', grupoFuncional: '', funcaoTrabalhador: '', corGrupo: '' });
     const [busca, setBusca] = useState('');
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        carregarInscricoes();
-    }, [filtros]);
-
-    const carregarInscricoes = async () => {
-        setLoading(true);
-        try {
-            const params = { ...filtros, limit: 100 };
-            const { data } = await api.get('/inscricoes', { params });
-            setInscricoes(data.inscricoes);
-        } catch (error) {
-            toast.error('Erro ao carregar inscrições');
-        } finally {
-            setLoading(false);
-        }
+    // Configuração do URL para SWR
+    const getKey = () => {
+        const params = new URLSearchParams({ ...filtros, limit: 100 });
+        if (busca.trim()) params.append('query', busca);
+        return busca.trim() ? `/inscricoes/buscar?${params.toString()}` : `/inscricoes?${params.toString()}`;
     };
 
-    const handleBusca = async () => {
-        if (!busca.trim()) return carregarInscricoes();
+    const { data, error, mutate, isLoading } = useSWR(getKey(), fetcher, {
+        keepPreviousData: true, // Mantém dados antigos enquanto carrega novos (sensação de fluidez)
+        revalidateOnFocus: false, // Evita recarregar ao trocar de aba (opcional)
+    });
 
-        try {
-            const { data } = await api.get('/inscricoes/buscar', { params: { query: busca } });
+    useEffect(() => {
+        if (data?.inscricoes) {
             setInscricoes(data.inscricoes);
-        } catch (error) {
-            toast.error('Erro na busca');
         }
+    }, [data]);
+
+    const handleBusca = () => {
+        // SWR reage automaticamente à mudança no estado 'busca' se incluído na key
+        // Mas como 'busca' está no estado, precisamos garantir que o SWR atualize.
+        // A função getKey já usa 'busca'.
     };
 
     const handleAprovar = async (id, tipo) => {
         try {
             await api.patch(`/inscricoes/${id}/aprovar?tipo=${tipo}`);
             toast.success('Inscrição aprovada!');
-            carregarInscricoes();
+            mutate(); // Revalida o cache localmente
         } catch (error) {
             toast.error('Erro ao aprovar');
         }
@@ -194,7 +191,7 @@ const Inscricoes = () => {
                 </Card>
 
                 <div className={styles.list}>
-                    {loading ? (
+                    {isLoading && !data ? (
                         <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>Carregando dados...</div>
                     ) : inscricoes.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '3rem', opacity: 0.5 }}>Nenhum registro encontrado.</div>

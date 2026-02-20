@@ -1,31 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import api from '../../services/api';
+import useSWR from 'swr';
+import api, { fetcher } from '../../services/api';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
 import styles from './TrabalhadorPorFuncao.module.css';
 
 const TrabalhadorPorFuncao = () => {
     const navigate = useNavigate();
-    const [agrupamento, setAgrupamento] = useState({});
-    const [loading, setLoading] = useState(true);
     const [expandidos, setExpandidos] = useState({});
 
-    useEffect(() => {
-        carregar();
-    }, []);
-
-    const carregar = async () => {
-        try {
-            const { data } = await api.get('/cracha/por-funcao');
-            setAgrupamento(data);
-        } catch (error) {
-            toast.error('Erro ao carregar agrupamento');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: agrupamento, isLoading } = useSWR('/cracha/por-funcao', fetcher, {
+        revalidateOnFocus: false,
+        fallbackData: {}
+    });
 
     const toggleExpansao = (funcao) => {
         setExpandidos(prev => ({ ...prev, [funcao]: !prev[funcao] }));
@@ -50,7 +39,7 @@ const TrabalhadorPorFuncao = () => {
         }
     };
 
-    if (loading) {
+    if (isLoading && !agrupamento.total) {
         return <div className={styles.loading}>Carregando...</div>;
     }
 

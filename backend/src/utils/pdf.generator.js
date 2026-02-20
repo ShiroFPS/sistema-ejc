@@ -1,9 +1,6 @@
 import PDFDocument from 'pdfkit';
-import { PrismaClient } from '@prisma/client';
-import axios from 'axios';
+import prisma from './prisma.js';
 import QRCode from 'qrcode';
-
-const prisma = new PrismaClient();
 
 export const gerarFichaEntrevista = async (inscricaoId) => {
     let inscricao = await prisma.inscricaoParticipante.findUnique({
@@ -62,13 +59,19 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             };
 
             // DADOS PESSOAIS
-            // Tentar carregar a foto primeiro
+            // Tentar carregar a foto do banco de dados (evitar HTTP loopback)
             if (inscricao.fotoUrl) {
                 try {
-                    const response = await axios.get(inscricao.fotoUrl, { responseType: 'arraybuffer' });
-                    const imageBuffer = Buffer.from(response.data, 'binary');
-                    // Foto no canto superior direito (abaixo da linha separadora)
-                    doc.image(imageBuffer, 450, 130, { width: 90, height: 120, fit: [90, 120] });
+                    // Extrair ID do arquivo da URL: .../api/upload/file/[ID]
+                    const fileId = inscricao.fotoUrl.split('/').pop();
+                    const arquivo = await prisma.arquivo.findUnique({
+                        where: { id: fileId }
+                    });
+
+                    if (arquivo && arquivo.dados) {
+                        // Foto no canto superior direito (abaixo da linha separadora)
+                        doc.image(arquivo.dados, 450, 130, { width: 90, height: 120, fit: [90, 120] });
+                    }
                 } catch (error) {
                     console.error('Erro ao carregar foto para o PDF:', error.message);
                 }
@@ -78,7 +81,11 @@ export const gerarFichaEntrevista = async (inscricaoId) => {
             addField('Nome Completo', inscricao.nomeCompleto || inscricao.nomeCompleto1);
             addField('Apelido', inscricao.apelido);
             if (inscricao.dataNascimento) {
-                addField('Data de Nascimento', new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR'));
+                try {
+                    addField('Data de Nascimento', new Date(inscricao.dataNascimento).toLocaleDateString('pt-BR'));
+                } catch (e) {
+                    addField('Data de Nascimento', inscricao.dataNascimento);
+                }
             }
             addField('Sexo', inscricao.sexo || inscricao.sexo1);
             addField('Telefone', inscricao.telefone || inscricao.contato1);

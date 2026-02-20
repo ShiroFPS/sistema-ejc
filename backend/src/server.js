@@ -39,16 +39,16 @@ app.use(compression());
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // 100 requests por IP
-    message: 'Muitas requisições, tente novamente mais tarde',
+    windowMs: 1 * 60 * 1000, // 1 minuto
+    max: 200, // Aumentado para lidar com rajadas de tráfego do SPA
+    message: 'Muitas requisições, tente novamente em breve',
     standardHeaders: true,
     legacyHeaders: false,
 });
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 5, // 5 tentativas de login
+    max: 10, // Aumentado ligeiramente para evitar falsos positivos
     message: 'Muitas tentativas de login, tente novamente mais tarde',
     skipSuccessfulRequests: true,
 });
@@ -117,8 +117,19 @@ const PORT = config.port;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`📡 Frontend permitido: ${config.frontendUrl}`);
-    console.log(`🛡️  Rate limiting ativado`);
+    console.log(`🛡️  Rate limiting configurado`);
     console.log(`🔒 Security headers ativados`);
+});
+
+// Tratamento de erros globais para evitar queda do processo
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('❌ Uncaught Exception:', err);
+    // Em produção, talvez queiramos fechar o servidor graciosamente após erro fatal
+    // mas no Render free tier, o processo reinicia automaticamente.
 });
 
 export default app;

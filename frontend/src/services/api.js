@@ -37,4 +37,6 @@ api.interceptors.response.use(
     }
 );
 
+export const fetcher = (url) => api.get(url).then((res) => res.data);
+
 export default api;

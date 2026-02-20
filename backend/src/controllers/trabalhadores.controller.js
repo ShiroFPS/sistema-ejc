@@ -1,6 +1,7 @@
 import { InscricaoService } from '../services/inscricao.service.js';
 import { trabalhadorSchema } from '../schemas/inscricao.schema.js';
 import { prisma } from '../utils/prisma.js';
+import { deleteAssociatedFiles } from '../utils/cleanup.js';
 
 // Criar inscrição de trabalhador
 export const criarTrabalhador = async (req, res, next) => {

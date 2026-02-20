@@ -105,6 +105,7 @@ model InscricaoParticipante {
   @@index([cpf])
   @@index([status, createdAt])
   @@index([nomeCompleto, status])
+  @@index([email])
 }
 
 // Modelo para Trabalhadores/Encontreiros (campos específicos)
@@ -190,6 +191,8 @@ model InscricaoTrabalhador {
   @@index([status, createdAt])
   @@index([funcaoTrabalhador, status])
   @@index([nomeCompleto1])
+  @@index([nomeCompleto2])
+  @@index([email])
 }
 
 model Configuracao {
