@@ -6,3 +6,17 @@ build
 .DS_Store
 uploads/
 backups/
+
+# Scripts temporários de diagnóstico / restauração (não commitar)
+check_*.js
+restore_*.js
+debug_*.js
+normalize_*.js
+deduplicate_*.js
+list_tables.js
+functions_report.json
+restored_*.json
+*.sqlite
+dev.db
+prisma/generated/
+prisma/schema_sqlite.prisma
