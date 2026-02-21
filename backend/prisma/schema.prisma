@@ -71,13 +71,13 @@ model InscricaoParticipante {
   moraComQuem       String
   
   // Dados dos pais
-  estadoCivilPais   String
-  nomeMae           String
-  telefoneMae       String
-  enderecoMae       String
-  nomePai           String
-  telefonePai       String
-  enderecoPai       String
+  estadoCivilPais   String?
+  nomeMae           String?
+  telefoneMae       String?
+  enderecoMae       String?
+  nomePai           String?
+  telefonePai       String?
+  enderecoPai       String?
   
   // Amigos/parentes inscritos
   amigosParentesInscritos String?
@@ -149,7 +149,7 @@ model InscricaoTrabalhador {
   receberWhatsapp       Boolean  @default(true)
   
   // Endereço
-  enderecoCompleto      String
+  enderecoCompleto      String?
   
   // Trabalho/Estudo
   trabalhamOuEstudam    Boolean  @default(false)
@@ -162,9 +162,8 @@ model InscricaoTrabalhador {
   localTrabalho2        String?
   instituicaoEnsino1    String?
   instituicaoEnsino2    String?
-  
-  // Experiência EJC
-  equipesJaServiram     String   // Ex: "Vermelho, Verde"
+    paroquiaEjcAno        String?
+  equipesJaServiram     String?  // Ex: "Vermelho, Verde"
   
   // Habilidades
   tocaInstrumento       Boolean  @default(false)
@@ -238,5 +237,4 @@ model Arquivo {
   createdAt    DateTime @default(now())
 
   @@map("arquivos")
-}
 }

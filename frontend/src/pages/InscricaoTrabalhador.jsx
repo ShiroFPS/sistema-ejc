@@ -63,7 +63,7 @@ const InscricaoTrabalhador = () => {
 
             const inscricaoData = {
                 ...data,
-                trabalhamOuEstudam: data.trabalhamOuEstudam === 'sim',
+                trabalhamOuEstudam: data.trabalhoEstudoStatus1 === 'sim',
                 tocaInstrumento: data.tocaInstrumento === 'sim',
                 sabeCantar: data.sabeCantar === 'sim',
                 operaEquipamentosSom: data.operaEquipamentosSom === 'sim',
