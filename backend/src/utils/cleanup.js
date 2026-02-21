@@ -1,4 +1,4 @@
-import prisma from './prisma.js';
+import { prisma } from './prisma.js';
 
 /**
  * Extrai o ID do arquivo a partir da URL.

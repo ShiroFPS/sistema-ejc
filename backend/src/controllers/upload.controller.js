@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma.js';
+import { prisma } from '../utils/prisma.js';
 import sharp from 'sharp';
 
 export const uploadFoto = async (req, res, next) => {

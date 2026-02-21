@@ -89,7 +89,7 @@ export const importWorkers = async (req, res, next) => {
                     };
 
                     if (!data.nomeCompleto) continue;
-                    await InscricaoService.criarParticipante(data);
+                    await InscricaoService.criarParticipante(data, { skipEmail: true });
                 } else {
                     // Mapeamento de Trabalhadores
                     const email = (values[2] || '').toString();
@@ -152,7 +152,7 @@ export const importWorkers = async (req, res, next) => {
                     }
 
                     if (!data.nomeCompleto1) continue;
-                    await InscricaoService.criarTrabalhador(data);
+                    await InscricaoService.criarTrabalhador(data, { skipEmail: true });
                 }
                 imported++;
             } catch (err) {

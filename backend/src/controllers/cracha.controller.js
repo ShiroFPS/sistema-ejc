@@ -228,7 +228,10 @@ export const gerarCrachaPDF = async (req, res, next) => {
         const fotoUrl = dadosCracha.fotoUrl || dadosCracha.fotoUrl1;
         if (fotoUrl) {
             try {
-                const res = await axios.get(fotoUrl, { responseType: 'arraybuffer' });
+                const res = await axios.get(fotoUrl, {
+                    responseType: 'arraybuffer',
+                    timeout: 5000 // 5 segundos de limite
+                });
                 fotoBuffer = Buffer.from(res.data, 'binary');
             } catch (err) {
                 console.error('Erro ao baixar foto para crachá:', err.message);
@@ -282,19 +285,21 @@ export const gerarCrachasEmLote = async (req, res, next) => {
 
         const gapY = 0; // ZERO GAP para economizar espaço e facilitar corte
 
-        // Pré-carregar fotos para o lote
-        const fotosBufferMap = new Map();
-        await Promise.all(inscricoes.map(async (ins) => {
+        // Processar um por um para economizar memória (batch processing serial)
+        for (const ins of inscricoes) {
             const fotoUrl = ins.fotoUrl || ins.fotoUrl1;
             if (fotoUrl) {
                 try {
-                    const res = await axios.get(fotoUrl, { responseType: 'arraybuffer' });
+                    const res = await axios.get(fotoUrl, {
+                        responseType: 'arraybuffer',
+                        timeout: 5000
+                    });
                     fotosBufferMap.set(ins.id, Buffer.from(res.data, 'binary'));
                 } catch (err) {
                     console.error(`Erro ao baixar foto para crachá ${ins.id}:`, err.message);
                 }
             }
-        }));
+        }
 
         let count = 0;
         let pageCount = 0;

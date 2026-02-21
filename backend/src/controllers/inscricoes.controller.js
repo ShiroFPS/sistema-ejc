@@ -124,8 +124,6 @@ export const listar = async (req, res, next) => {
             const trabalhadores = await prisma.inscricaoTrabalhador.findMany({
                 where: trabalhadoresWhere,
                 skip: !tipo ? skip : 0,
-                take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
-                take: !tipo ? Math.ceil(parseInt(limit) / 2) : parseInt(limit),
                 orderBy: { createdAt: 'desc' },
                 select: {
                     id: true,

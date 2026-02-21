@@ -233,14 +233,6 @@ const InscricaoDetalhes = () => {
                                 </div>
                             </Card>
                         )}
-                        {inscricao.comprovanteUrl && (
-                            <Card>
-                                <h2 className={styles.sectionTitle}>📄 Financeiro</h2>
-                                <a href={inscricao.comprovanteUrl} target="_blank" rel="noreferrer" className={styles.linkComprovante}>
-                                    📎 Abrir Comprovante de Pagamento
-                                </a>
-                            </Card>
-                        )}
                     </div>
                 </div>
             </motion.div >

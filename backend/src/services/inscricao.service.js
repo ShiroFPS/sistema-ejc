@@ -29,7 +29,7 @@ export class InscricaoService {
         return { existe: false };
     }
 
-    static async criarParticipante(dados) {
+    static async criarParticipante(dados, { skipEmail = false } = {}) {
         const duplicata = await this.verificarDuplicata({
             cpf: dados.cpf,
             nomeCompleto: dados.nomeCompleto
@@ -47,14 +47,14 @@ export class InscricaoService {
             },
         });
 
-        if (inscricao.receberEmail && inscricao.email) {
+        if (!skipEmail && inscricao.receberEmail && inscricao.email) {
             sendWelcomeEmail(inscricao.nomeCompleto, inscricao.email, 'PARTICIPANTE').catch(err => console.error('Email error:', err));
         }
 
         return inscricao;
     }
 
-    static async criarTrabalhador(dados) {
+    static async criarTrabalhador(dados, { skipEmail = false } = {}) {
         const duplicata = await this.verificarDuplicata({
             cpf1: dados.cpf1,
             cpf2: dados.cpf2,
@@ -77,7 +77,7 @@ export class InscricaoService {
             },
         });
 
-        if (inscricao.receberEmail && inscricao.email) {
+        if (!skipEmail && inscricao.receberEmail && inscricao.email) {
             sendWelcomeEmail(inscricao.nomeCompleto1, inscricao.email, 'TRABALHADOR').catch(err => console.error('Email error:', err));
         }
 
