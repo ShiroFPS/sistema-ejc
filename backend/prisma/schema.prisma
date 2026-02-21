@@ -35,6 +35,7 @@ model InscricaoParticipante {
   
   // LGPD
   lgpdCiente        Boolean  @default(false)
+  tipo              String?
   
   // Dados pessoais
   nomeCompleto      String
@@ -124,6 +125,8 @@ model InscricaoTrabalhador {
   
   // Tipo de inscrição
   tipoInscricao         String   // CASAIS_UNIAO_ESTAVEL ou SOLTEIRO
+  tipo                  String?
+  lgpdCiente            Boolean  @default(false)
   
   // E-mail
   email                 String
