@@ -109,7 +109,6 @@ export const listar = async (req, res, next) => {
                     apelido: true,
                     telefone: true,
                     status: true,
-                    tipoInscricao: false, // Não existe em participante
                     corGrupo: true,
                     createdAt: true,
                     // Adicionar campos necessários para filtros ou lógica futura se precisar
