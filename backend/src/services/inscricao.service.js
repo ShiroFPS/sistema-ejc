@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma.js';
 import { sendWelcomeEmail } from './email.service.js';
 import { generateShortCode } from '../utils/helpers.js';
-
-const prisma = new PrismaClient();
 
 export class InscricaoService {
     /**
@@ -50,7 +48,7 @@ export class InscricaoService {
         });
 
         if (inscricao.receberEmail && inscricao.email) {
-            await sendWelcomeEmail(inscricao.nomeCompleto, inscricao.email, 'PARTICIPANTE');
+            sendWelcomeEmail(inscricao.nomeCompleto, inscricao.email, 'PARTICIPANTE').catch(err => console.error('Email error:', err));
         }
 
         return inscricao;
@@ -80,7 +78,7 @@ export class InscricaoService {
         });
 
         if (inscricao.receberEmail && inscricao.email) {
-            await sendWelcomeEmail(inscricao.nomeCompleto1, inscricao.email, 'TRABALHADOR');
+            sendWelcomeEmail(inscricao.nomeCompleto1, inscricao.email, 'TRABALHADOR').catch(err => console.error('Email error:', err));
         }
 
         return inscricao;

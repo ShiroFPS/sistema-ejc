@@ -111,6 +111,7 @@ function App() {
                             </ProtectedRoute>
                         } />
 
+
                         <Route path="/vagas-esgotadas" element={<VagasEsgotadas />} />
 
                         <Route path="/admin/importar" element={
@@ -138,7 +139,7 @@ function App() {
                 />
                 <Footer />
             </BrowserRouter>
-        </ErrorBoundary>
+        </ErrorBoundary >
     );
 }
 

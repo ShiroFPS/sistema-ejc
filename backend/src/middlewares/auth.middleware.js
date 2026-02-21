@@ -23,6 +23,9 @@ export const authMiddleware = async (req, res, next) => {
     }
 };
 
+// Aliases para compatibilidade com rotas de e-commerce
+export const verificarToken = authMiddleware;
+
 export const requireRole = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -36,3 +39,5 @@ export const requireRole = (...roles) => {
         next();
     };
 };
+
+export const verificarAdmin = requireRole('ADMIN');

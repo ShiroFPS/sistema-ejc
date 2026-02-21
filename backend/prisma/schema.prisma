@@ -239,3 +239,4 @@ model Arquivo {
 
   @@map("arquivos")
 }
+}

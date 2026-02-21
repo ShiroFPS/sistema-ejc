@@ -38,7 +38,7 @@ const InscricaoParticipante = () => {
         setLoading(true);
         try {
             let currentFotoUrl = fotoUrl;
-            let currentComprovanteUrl = comprovanteUrl;
+            let currentComprovanteUrl = null;
 
             if (data.foto?.[0]) {
                 const url = await uploadFile(data.foto[0], 'foto');
