@@ -13,7 +13,12 @@ export const criarTrabalhador = async (req, res, next) => {
         res.status(201).json(inscricao);
     } catch (error) {
         if (error.name === 'ZodError') {
-            return res.status(400).json({ error: 'Dados inválidos', details: error.errors });
+            const field = error.errors[0]?.path.join('.') || 'geral';
+            const msg = error.errors[0]?.message || 'formato inválido';
+            return res.status(400).json({
+                error: `Campo inválido: ${field} (${msg})`,
+                details: error.errors
+            });
         }
         next(error);
     }
