@@ -51,11 +51,11 @@ model InscricaoParticipante {
   receberWhatsapp   Boolean  @default(true)
   
   // Estado civil e escolaridade
-  estadoCivil       String   // SOLTEIRO, CASADO, UNIAO_ESTAVEL, DIVORCIADO, VIUVO
-  escolaridade      String
+  estadoCivil       String?  // SOLTEIRO, CASADO, UNIAO_ESTAVEL, DIVORCIADO, VIUVO
+  escolaridade      String?
   instituicaoEnsino String?
   cursoAtual        String?
-  profissao         String
+  profissao         String?
   trabalha          Boolean  @default(false)
   localTrabalho     String?
   
@@ -66,9 +66,9 @@ model InscricaoParticipante {
   fezCrisma         Boolean  @default(false)
   
   // Endereço
-  enderecoCompleto  String
-  bairro            String
-  moraComQuem       String
+  enderecoCompleto  String?
+  bairro            String?
+  moraComQuem       String?
   
   // Dados dos pais
   estadoCivilPais   String?

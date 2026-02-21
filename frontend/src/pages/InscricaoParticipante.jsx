@@ -59,6 +59,7 @@ const InscricaoParticipante = () => {
                 fotoUrl: currentFotoUrl,
                 // comprovanteUrl removido
                 contatosEmergencia,
+                lgpdCiente: data.lgpdCiente === true,
                 trabalha: data.trabalha === 'sim',
                 batizado: data.batizado === 'sim',
                 fezPrimeiraComunhao: data.fezPrimeiraComunhao === 'sim',
@@ -129,6 +130,18 @@ const InscricaoParticipante = () => {
                             <Input label="Instagram" {...register('instagram')} />
                             <Input label="CPF" {...register('cpf', { required: 'Obrigatório' })} error={errors.cpf?.message} />
                             <Input label="E-mail" type="email" {...register('email', { required: 'Obrigatório' })} error={errors.email?.message} />
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Estado Civil *</label>
+                                <select {...register('estadoCivil', { required: 'Obrigatório' })} className={styles.select}>
+                                    <option value="">Selecione...</option>
+                                    <option value="SOLTEIRO">Solteiro(a)</option>
+                                    <option value="CASADO">Casado(a)</option>
+                                    <option value="UNIAO_ESTAVEL">União Estável</option>
+                                    <option value="DIVORCIADO">Divorciado(a)</option>
+                                    <option value="VIUVO">Viúvo(a)</option>
+                                </select>
+                                {errors.estadoCivil && <span className={styles.error}>{errors.estadoCivil.message}</span>}
+                            </div>
                         </div>
                     </Card>
 

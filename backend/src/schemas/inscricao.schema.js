@@ -21,6 +21,7 @@ export const participanteSchema = z.object({
     telefonePai: z.string().optional().nullable(),
     enderecoPai: z.string().optional().nullable(),
     escolaridade: z.string(),
+    instituicaoEnsino: z.string().optional().nullable(),
     profissao: z.string(),
     trabalha: z.boolean().default(false),
     localTrabalho: z.string().optional().nullable(),
@@ -36,6 +37,8 @@ export const participanteSchema = z.object({
     medicamentosContinuos: z.string().optional().nullable(),
     amigosParentesInscritos: z.string().optional().nullable(),
     contatosEmergencia: z.string(), // Mantido como string JSON por enquanto
+    lgpdCiente: z.boolean().optional().nullable(),
+    tipo: z.string().optional().nullable(),
     corGrupo: z.string().optional().nullable(),
     fotoUrl: z.string().optional().nullable(),
     comprovanteUrl: z.string().optional().nullable(),
@@ -79,4 +82,6 @@ export const trabalhadorSchema = z.object({
     habilidadesTalentos: z.string().optional().nullable(),
     fotoUrl1: z.string().optional().nullable(),
     fotoUrl2: z.string().optional().nullable(),
+    lgpdCiente: z.boolean().optional().nullable(),
+    tipo: z.string().optional().nullable(),
 });
